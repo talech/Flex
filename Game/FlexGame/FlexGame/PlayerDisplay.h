@@ -22,6 +22,7 @@ protected:
 	void init();
 
 	virtual void DrawPlayer(Player* player);
+	virtual void DrawActorRec(Player* player, Joint* pJoint);
 
 
 private:

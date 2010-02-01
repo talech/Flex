@@ -4,6 +4,7 @@
 #define GAMEBRYO
 
 #include <stdio.h>
+#include <NiApplication.h>
 
 #include "PlayerDisplay.h"
 
@@ -19,9 +20,17 @@ public:
 	virtual void UpdateFrame();
 
 protected:
-	
+	// Remap the keys used to control the view.
+    void SetTurretControls();
+
+
 	Player* m_pPlayer;
 	PlayerDisplay* m_playerDisplay;
+
+	// Keyboard and gamepad handling for the camera.
+    NiTurret m_kTurret;
+    NiNodePtr m_spTrnNode;
+    NiNodePtr m_spRotNode;
 	
     
 };

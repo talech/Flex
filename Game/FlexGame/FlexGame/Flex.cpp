@@ -22,6 +22,8 @@ Flex::Flex() : NiApplication("Flex",
     SetMediaPath("../Data/");  
 #endif
 
+	m_spTrnNode = 0;
+    m_spRotNode = 0;
 }
 //---------------------------------------------------------------------------
 
@@ -39,12 +41,6 @@ Flex::CreateScene(){
 
     NiAlphaAccumulator* pkAccum = NiNew NiAlphaAccumulator;
     m_spRenderer->SetSorter(pkAccum);
-
-    // NiStreams are used to load a NIF file from disk. Once a stream is 
-    // loaded, it will contain one or more "top-level" objects. These objects
-    // could be NiNodes, NiTextures, or any other Gamebryo class. The Max and 
-    // Maya exporters both place the scene graph as the first element in the
-    // NIF file.
 
     NiStream kStream;
 
@@ -74,7 +70,13 @@ Flex::CreateScene(){
     m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
 
 	
-	
+	// Set up camera control
+    SetTurretControls();
+
+    // Update the scene graph before rendering begins.
+    m_spScene->UpdateProperties();
+    m_spScene->UpdateEffects();
+    m_spScene->Update(0.0f);
 	
 
     return bSuccess;
@@ -84,5 +86,80 @@ Flex::CreateScene(){
 void
 Flex::UpdateFrame(){
 	NiApplication::UpdateFrame(); // Calls process input
+
+	// Update the camera. This uses global time.
+    if (m_kTurret.Read())
+        m_spTrnNode->Update(m_fAccumTime);
+
+	// update the playerDisplay
 	m_playerDisplay->Update();
+
+	// update the scene graph.
+    m_spScene->Update(m_fAccumTime);
 }
+
+//---------------------------------------------------------------------------
+void 
+Flex::SetTurretControls(){   
+
+    m_spCamera->Update(0.0f);
+    m_spTrnNode = NiNew NiNode();
+    m_spTrnNode->SetTranslate(m_spCamera->GetWorldTranslate());
+    m_spCamera->SetTranslate(NiPoint3::ZERO);
+    m_spRotNode = NiNew NiNode();
+    m_spTrnNode->AttachChild(m_spRotNode);
+    m_spRotNode->SetRotate(m_spCamera->GetWorldRotate());
+    m_spCamera->SetRotate(NiMatrix3::IDENTITY);
+    m_spRotNode->AttachChild(m_spCamera);
+    m_spTrnNode->Update(0.0f);
+    
+    float fTrnSpeed = 0.05f;
+    float fRotSpeed = 0.005f;
+
+    m_kTurret.SetStandardTrn(fTrnSpeed, m_spTrnNode);
+    m_kTurret.SetStandardRot(fRotSpeed, m_spTrnNode, m_spRotNode);
+    NiMatrix3 kRot;
+    kRot.SetCol(0, 1.0f, 0.0f, 0.0f);
+    kRot.SetCol(1, 0.0f, 0.0f, 1.0f);
+    kRot.SetCol(2, 0.0f, -1.0f, 0.0f);
+    m_kTurret.SetAxes(kRot);
+    
+    if (m_kTurret.GetInputDevice() == NiTurret::TUR_KEYBOARD)
+    {
+        m_kTurret.SetTrnButtonsKB(2,
+            NiInputKeyboard::KEY_W, NiInputKeyboard::KEY_S);
+        m_kTurret.SetTrnButtonsKB(1,
+            NiInputKeyboard::KEY_Q, NiInputKeyboard::KEY_E);
+        m_kTurret.SetTrnButtonsKB(0,
+            NiInputKeyboard::KEY_D, NiInputKeyboard::KEY_A);
+            
+        m_kTurret.SetRotButtonsKB(1,
+            NiInputKeyboard::KEY_J, NiInputKeyboard::KEY_L);
+        m_kTurret.SetRotButtonsKB(2,
+            NiInputKeyboard::KEY_I, NiInputKeyboard::KEY_K);
+    }
+    else if (m_kTurret.GetInputDevice() == NiTurret::TUR_GAMEPAD)
+    {
+        m_kTurret.SetTrnButtonsStickDirGP(0, 
+            NiInputGamePad::NIGP_STICK_LEFT, 
+            NiInputGamePad::NIGP_STICK_AXIS_V);
+        m_kTurret.SetTrnButtonsGP(1, 
+            NiInputGamePad::NIGP_L1, 
+            NiInputGamePad::NIGP_R1);
+        m_kTurret.SetTrnButtonsStickDirGP(2, 
+            NiInputGamePad::NIGP_STICK_LEFT, 
+            NiInputGamePad::NIGP_STICK_AXIS_H);
+
+        m_kTurret.SetRotButtonsGP(0, NiInputGamePad::NIGP_NONE,
+            NiInputGamePad::NIGP_NONE);
+        m_kTurret.SetRotButtonsStickDirGP(1, 
+            NiInputGamePad::NIGP_STICK_RIGHT, 
+            NiInputGamePad::NIGP_STICK_AXIS_H);
+        m_kTurret.SetRotModifiers(1, NiInputGamePad::NIGP_MASK_NONE);
+        m_kTurret.SetRotButtonsStickDirGP(2, 
+            NiInputGamePad::NIGP_STICK_RIGHT, 
+            NiInputGamePad::NIGP_STICK_AXIS_V);
+        m_kTurret.SetRotModifiers(2, NiInputGamePad::NIGP_MASK_NONE);
+    }
+}
+//---------------------------------------------------------------------------
