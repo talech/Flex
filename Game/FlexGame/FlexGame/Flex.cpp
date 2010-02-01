@@ -15,22 +15,13 @@ NiApplication* NiApplication::Create()
 }
 //---------------------------------------------------------------------------
 
-Flex::Flex() : NiSample("Flex",
+Flex::Flex() : NiApplication("Flex",
     DEFAULT_WIDTH, DEFAULT_HEIGHT, true)
 {
-#if defined(_XENON)
-    SetMediaPath("D:/DATA/");
-#elif defined (WIN32)
-    SetMediaPath("../Data/");   
-#elif defined (_PS3)
-    SetMediaPath("../../../../Data/");  
-#elif defined(_WII)
-
-
-    m_uiMaxOutputLogLines = 4;
+#if defined (WIN32)
+    SetMediaPath("../Data/");  
 #endif
 
-    m_bUseNavSystem = false;
 }
 //---------------------------------------------------------------------------
 
@@ -77,31 +68,21 @@ Flex::CreateScene(){
         return false;
     }
 
-    // We expect the world to have been exported with a camera, so we 
-    // look for it here.
-    // In order to render the scene graph, we need a camera. We're now going
-    // to recurse the scene graph looking for a camera.
+	m_pPlayer = new Player();
+	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Tools/AMC2Maya/asf_amc_convert_to_maya/Style4.asf");
+//	m_pPlayer->LoadMotion("C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Tools\AMC2Maya\asf_amc_convert_to_maya\walk_fwd_circle.amc");
+    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
 
-	NiAVObject* m_Sphere = (NiAVObject*)m_spScene->GetObjectByName("Sphere")->Clone();
 	
-	m_Sphere->SetTranslate( NiPoint3(0,0,0) );
-	m_spScene->AttachChild(m_Sphere);
+	
+	
 
     return bSuccess;
 }
 //---------------------------------------------------------------------------
-bool 
-Flex::CreateUIElements(){
 
-    NiSample::CreateUIElements();
-
-    // The Log is a text output used by all NiSample derived classes
-#if defined(_WII)
-    AddLogEntry("Press (minus) + (plus) on a Wii Remote or "
-        "Z + Start on a Gamecube gamepad to quit");
-#else
-    AddLogEntry("Press ESC or Start + Select to quit");
-#endif
-
-    return true;
+void
+Flex::UpdateFrame(){
+	NiApplication::UpdateFrame(); // Calls process input
+	m_playerDisplay->Update();
 }

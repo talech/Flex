@@ -4,20 +4,24 @@
 #define GAMEBRYO
 
 #include <stdio.h>
-#include <NiSample.h>
+
 #include "PlayerDisplay.h"
 
 
-class Flex : public NiSample
+class Flex : public NiApplication
 {
 public:
 	Flex();
 	~Flex();
 
 	virtual bool CreateScene();
-    virtual bool CreateUIElements();
+
+	virtual void UpdateFrame();
 
 protected:
+	
+	Player* m_pPlayer;
+	PlayerDisplay* m_playerDisplay;
 	
     
 };
