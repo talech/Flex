@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <NiSample.h>
+#include "PlayerDisplay.h"
 
 
 class Flex : public NiSample

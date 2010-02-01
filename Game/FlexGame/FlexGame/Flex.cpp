@@ -39,9 +39,13 @@ Flex::~Flex(){
 //---------------------------------------------------------------------------
 bool 
 Flex::CreateScene(){
-    // Because our scene will have some billboards with alpha, we use 
-    // a NiAlphaAccumulator in order that our alpha gets sorted and drawn
-    // correctly.
+    if(!NiApplication::CreateScene())
+        return false;
+
+    // Set the background color
+    NiColor kColor(0.5f, 0.6f, 1.0f);
+    m_spRenderer->SetBackgroundColor(kColor);
+
     NiAlphaAccumulator* pkAccum = NiNew NiAlphaAccumulator;
     m_spRenderer->SetSorter(pkAccum);
 
@@ -55,11 +59,11 @@ Flex::CreateScene(){
 
     // Load in the scenegraph for our world...
     bool bSuccess = kStream.Load(
-        NiApplication::ConvertMediaFilename("WORLD.NIF"));
+        NiApplication::ConvertMediaFilename("Sphere.NIF"));
 
     if (!bSuccess)
     {
-        NiMessageBox("WORLD.NIF file could not be loaded!", "NIF Error");
+        NiMessageBox("Sphere.NIF file could not be loaded!", "NIF Error");
         return false;
     }
 
@@ -77,6 +81,11 @@ Flex::CreateScene(){
     // look for it here.
     // In order to render the scene graph, we need a camera. We're now going
     // to recurse the scene graph looking for a camera.
+
+	NiAVObject* m_Sphere = (NiAVObject*)m_spScene->GetObjectByName("Sphere")->Clone();
+	
+	m_Sphere->SetTranslate( NiPoint3(0,0,0) );
+	m_spScene->AttachChild(m_Sphere);
 
     return bSuccess;
 }

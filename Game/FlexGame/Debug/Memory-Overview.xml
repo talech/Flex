@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="memoryreport.xsl"?>
-<memory_log date="01/29/2010 - 21:44:30 UTC (16:44:30 local)">
-<memory_dump timestamp='0.003911' >
-	<alloc_marker marker_type='BEGIN' classifier='NiStream::Load' marker='..\Data\WORLD.NIF' next_id='6826' thread_id='12D0' time='16.608786' />
-	<alloc_marker marker_type='BEGIN' classifier='NiStream::Load' marker='0x022709A4' next_id='6828' thread_id='12D0' time='16.638615' />
-	<alloc_marker marker_type='END' classifier='NiStream::Load' marker='0x022709A4' next_id='13199' thread_id='12D0' time='17.830647' />
-	<alloc_marker marker_type='END' classifier='NiStream::Load' marker='..\Data\WORLD.NIF' next_id='13199' thread_id='12D0' time='17.831366' />
+<memory_log date="02/01/2010 -  0:12:38 UTC (19:12:38 local)">
+<memory_dump timestamp='0.036900' >
+	<alloc_marker marker_type='BEGIN' classifier='NiStream::Load' marker='..\Data\Sphere.NIF' next_id='7447' thread_id='1FD0' time='19.872189' />
+	<alloc_marker marker_type='BEGIN' classifier='NiStream::Load' marker='0x00600FC4' next_id='7449' thread_id='1FD0' time='19.875431' />
+	<alloc_marker marker_type='END' classifier='NiStream::Load' marker='0x00600FC4' next_id='7534' thread_id='1FD0' time='19.914982' />
+	<alloc_marker marker_type='END' classifier='NiStream::Load' marker='..\Data\Sphere.NIF' next_id='7534' thread_id='1FD0' time='19.915606' />
+	<alloc_marker marker_type='BEGIN' classifier='NiObject::Clone' marker='0x04672C5C' next_id='7534' thread_id='1FD0' time='19.915752' />
+	<alloc_marker marker_type='END' classifier='NiObject::Clone' marker='0x04672C5C' next_id='7550' thread_id='1FD0' time='19.916248' />
 </memory_dump>
-	<memory_summary timestamp='34.517620' TotalActiveSize='65700' PeakActiveSize='24098036' AccumulatedSize='44818806' AllocatedButUnusedSize='5500681' ActiveAllocCount='5' PeakActiveAllocCount='14767' TotalAllocCount='39043' TotalActiveExternalSize='0' PeakActiveExternalSize='0' AccumulatedExternalSize='0' ActiveExternalAllocCount='0' PeakExternalActiveAllocCount='0' TotalExternalAllocCount='0' TotalTrackerOverhead='3670020' PeakTrackerOverhead='3670020' AccumulatedTrackerOverhead='3670020' ></memory_summary>
+	<memory_summary timestamp='29.380932' TotalActiveSize='65700' PeakActiveSize='2254425' AccumulatedSize='4406517' AllocatedButUnusedSize='511280' ActiveAllocCount='5' PeakActiveAllocCount='8654' TotalAllocCount='12488' TotalActiveExternalSize='0' PeakActiveExternalSize='0' AccumulatedExternalSize='0' ActiveExternalAllocCount='0' PeakExternalActiveAllocCount='0' TotalExternalAllocCount='0' TotalTrackerOverhead='3670020' PeakTrackerOverhead='3670020' AccumulatedTrackerOverhead='3670020' ></memory_summary>
 </memory_log>
