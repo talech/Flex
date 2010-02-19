@@ -10,6 +10,8 @@
 
 using namespace std;
 
+
+
 class PlayerDisplay{
 public:
 	PlayerDisplay(Player* pPlayer, NiNodePtr sScene);
@@ -17,6 +19,7 @@ public:
 
 	virtual void Update();
 	virtual const Player* GetPlayer(){return m_Player;}
+	Player* m_Player;
 
 protected:
 	void init();
@@ -25,10 +28,13 @@ protected:
 	virtual void DrawActorRec(Player* player, Joint* pJoint);
 
 
+
 private:
-	Player* m_Player;
+	
 	NiNodePtr scene;
 
+	bool isChild;
+	float Deg2Rad(float deg){return (deg*(3.14159265/180.0));}
 };
 
 #endif

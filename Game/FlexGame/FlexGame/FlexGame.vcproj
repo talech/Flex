@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_Debug.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops"
+			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_Debug.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_PhysX_StaticLink.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Target_StaticLinkedExecutable.vsprops"
 			CharacterSet="0"
 			>
 			<Tool
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include"
+				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiApplication.lib NiVisualTracker.lib NiInput.lib NiDX9Renderer.lib NiD3D10Renderer.lib NiSample.lib NiFont.lib NiAnimation.lib NiParticle.lib NiUserInterface.lib NiCursor.lib"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug"
+				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -169,6 +169,84 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="DebugWithReleaseLibs|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_DebugWithReleaseLibs.vsprops"
+			CharacterSet="0"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiApplication.lib NiVisualTracker.lib NiInput.lib NiDX9Renderer.lib NiD3D10Renderer.lib NiSample.lib NiFont.lib NiAnimation.lib NiParticle.lib NiUserInterface.lib NiCursor.lib"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -186,6 +264,38 @@
 				RelativePath=".\PlayerDisplay.cpp"
 				>
 			</File>
+			<Filter
+				Name="FSM"
+				>
+				<File
+					RelativePath=".\Collided.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GameStateManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\InitializeState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LoadState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NewGameMenu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RunningState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\WallMoving.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -200,6 +310,42 @@
 				RelativePath=".\PlayerDisplay.h"
 				>
 			</File>
+			<Filter
+				Name="FSM"
+				>
+				<File
+					RelativePath=".\Collided.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GameState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GameStateManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\InitializeState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\LoadState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\NewGameMenu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RunningState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\WallMoving.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
