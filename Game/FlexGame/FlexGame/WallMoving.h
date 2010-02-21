@@ -31,5 +31,8 @@ protected:
 	static WallMoving mWallMoving;
 
 	WallMoving() {}
+
+	
+	NiPhysXProp* spWallProp;
 };
 #endif

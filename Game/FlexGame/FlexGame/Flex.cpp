@@ -75,6 +75,9 @@ Flex::Initialize(){
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_SKIN_WIDTH, 0.01f);
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_BOUNCE_THRESHOLD, -0.75f);
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZATION_SCALE, 2.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_AXES, 0.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_COLLISION_SHAPES, 0.0f);
+	m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_LIN_VELOCITY, 1.0f);
 
     if (!NiApplication::Initialize())
         return false;
@@ -141,7 +144,7 @@ Flex::CreateScene(){
     
     // Load some PhysX-enabled content.
     NiStream kStream;
-    if (!kStream.Load(ConvertMediaFilename("Sphere.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Environment.nif")))
 	{
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Wall1.nif. Aborting\n",
@@ -162,6 +165,62 @@ Flex::CreateScene(){
 
 	// Look for a camera and the PhysX content. In this case, the PhysX
     // content is the Flex scene.
+    NiPhysXPropPtr spEnvironmentProp = 0;
+    for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
+    {
+        if (NiIsKindOf(NiPhysXProp, kStream.GetObjectAt(ui)))
+        {
+            // We have found the PhysX content in the NIF.
+            spEnvironmentProp = (NiPhysXProp*)kStream.GetObjectAt(ui);
+        }
+    }
+    NIASSERT(spEnvironmentProp != 0);
+
+	// Repeat the process with the player.
+    kStream.RemoveAllObjects();
+    if (!kStream.Load(ConvertMediaFilename("Player.nif")))
+    {
+        NIASSERT(0 && "Couldn't load nif file\n");
+        NiMessageBox("Could not load Player.nif. Aborting\n",
+            "Missing nif file.");
+ 
+        return false;
+    }
+
+    // We know that this NIF file has the ball at location 0. Attach the
+    // ball to the scene graph.
+    NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
+    m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+
+    // Look for the PhysX content.
+    NiPhysXPropPtr spPlayerProp = 0;
+    for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
+    {
+        if (NiIsKindOf(NiPhysXProp, kStream.GetObjectAt(ui)))
+        {
+            // We have found the PhysX content in the NIF.
+            spPlayerProp = (NiPhysXProp*)kStream.GetObjectAt(ui);
+        }
+    }
+    NIASSERT(spPlayerProp != 0);
+
+	// Repeat the process with the wall(s).
+    kStream.RemoveAllObjects();
+    if (!kStream.Load(ConvertMediaFilename("Wall1.nif")))
+    {
+        NIASSERT(0 && "Couldn't load nif file\n");
+        NiMessageBox("Could not load Wall1.nif. Aborting\n",
+            "Missing nif file.");
+ 
+        return false;
+    }
+
+    // We know that this NIF file has the wall at location 0. Attach the
+    // ball to the scene graph.
+    NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
+    m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+
+    // Look for the PhysX content.
     NiPhysXPropPtr spWallProp = 0;
     for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
     {
@@ -173,6 +232,10 @@ Flex::CreateScene(){
     }
     NIASSERT(spWallProp != 0);
 
+
+	//Add props
+	m_spPhysScene->AddProp(spEnvironmentProp);
+	m_spPhysScene->AddProp(spPlayerProp);
 	m_spPhysScene->AddProp(spWallProp);
 
 	m_spPhysScene->SetUpdateDest(true);
@@ -186,6 +249,7 @@ Flex::CreateScene(){
     m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
 	totalFrame = m_pPlayer->GetTotalFrameCount();
 
+	GameStateManager::getInstance()->popState();
     return true;
 }
 //---------------------------------------------------------------------------
@@ -198,19 +262,20 @@ Flex::UpdateFrame(){
     if (m_kTurret.Read())
         m_spTrnNode->Update(m_fAccumTime);
 
-	GameStateManager::getInstance()->update(m_fAccumTime);    
-
- 
 	if (this->GetInputSystem()){
 		pkKeyboard = this->GetInputSystem()->GetKeyboard();
 	}
-
-
 	//update skeleton position
 	PlayMotion();
 
 	// update the playerDisplay
 	m_playerDisplay->Update();
+
+	GameStateManager::getInstance()->update(m_fAccumTime);    
+
+    m_spPhysScene->Simulate(m_fAccumTime);
+    m_spPhysScene->FetchResults(m_fAccumTime, true);
+    m_spPhysScene->UpdateDestinations(m_fAccumTime);
 
 	// update the scene graph.
     m_spScene->Update(m_fAccumTime);
@@ -289,10 +354,23 @@ Flex::SetTurretControls(){
 void
 Flex::PlayMotion(){
 	if (pkKeyboard != NULL){
-		if (pkKeyboard->KeyIsDown(NiInputKeyboard::KEY_RIGHT)){
+		if (pkKeyboard->KeyIsDown(NiInputKeyboard::KEY_UP)){
 			m_pPlayer->m_frameIndex = m_pPlayer->GetNextFrameIndex(m_pPlayer->m_frameIndex);
 			m_pPlayer->UpdateFrame(m_pPlayer->m_frameIndex);
 		}
     }
 
 }
+//---------------------------------------------------------------------------
+void 
+Flex::ProcessInput(){
+    NiApplication::ProcessInput();
+
+	NiInputMouse* pkMouse = GetInputSystem()->GetMouse();
+
+	GameStateManager::getInstance()->processMouse( pkMouse );
+
+    NiInputKeyboard* pkKeyboard = GetInputSystem()->GetKeyboard();
+	GameStateManager::getInstance()->processKeyboard(pkKeyboard);
+}
+//---------------------------------------------------------------------------

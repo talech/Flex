@@ -48,7 +48,7 @@ void NewGameMenu::processGamePad(GamePad *gamepad)
 
 void NewGameMenu::setUIGroup( NiUIGroup* group )
 {
-	//mMenuGroup = group;
+
 }
 
 void NewGameMenu::update(float delTime)

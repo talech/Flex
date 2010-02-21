@@ -21,6 +21,7 @@ public:
 	bool Initialize();
     void Terminate();
     void UpdateFrame();
+	void ProcessInput();
 
 	void SetCamera( NiCameraPtr cam );
 
