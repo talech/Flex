@@ -76,6 +76,8 @@ void WallMoving::update(float delTime)
 		position[2] = position[2] + .1;
 		wallActor->setGlobalPosition(position);
 
+		
+
 
 	}
 	

@@ -206,7 +206,7 @@ Flex::CreateScene(){
 
 	// Repeat the process with the wall(s).
     kStream.RemoveAllObjects();
-    if (!kStream.Load(ConvertMediaFilename("Wall1.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Wall2.nif")))
     {
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Wall1.nif. Aborting\n",
