@@ -14,6 +14,7 @@ NiEmbedGamebryoLicenseCode;
 
 #include "Flex.h"
 
+
 //---------------------------------------------------------------------------
 NiApplication* NiApplication::Create()
 {
@@ -22,15 +23,11 @@ NiApplication* NiApplication::Create()
 //---------------------------------------------------------------------------
 
 Flex::Flex() : NiApplication("Flex",
-    DEFAULT_WIDTH, DEFAULT_HEIGHT, true)
+    DEFAULT_WIDTH, DEFAULT_HEIGHT, true),
+	m_PhysContactReporter()
 {
-#if defined (WIN32)
     SetMediaPath("../Data/");  
-#endif
-
-
-	m_spTrnNode = 0;
-    m_spRotNode = 0;
+	m_PhysContactReporter.m_app = this;
 
 	// Initialize smart pointers to zero. In the case of early termination
     // this avoid errors.
@@ -73,17 +70,16 @@ Flex::Initialize(){
     // m_pkPhysXSDK. Here we use it to set some global SDK parameters.
     // See the PhysX documentation for an explanation of these settings.
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_SKIN_WIDTH, 0.01f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_BOUNCE_THRESHOLD, -0.75f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZATION_SCALE, 2.0f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_AXES, 0.0f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_COLLISION_SHAPES, 0.0f);
-	m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_LIN_VELOCITY, 1.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_BOUNCE_THRESHOLD, -2.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_AXES, 2.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_COLLISION_SHAPES, 1.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_ACTOR_AXES, 5.0);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_LIN_VELOCITY, 5.0);
 
     if (!NiApplication::Initialize())
         return false;
             
-    // Set up camera control
-    SetTurretControls();
 	pkKeyboard = NULL;
 
     // Update the scene graph before rendering begins.
@@ -91,6 +87,13 @@ Flex::Initialize(){
     m_spScene->UpdateEffects();
     m_spScene->Update(0.0f);
 
+	// Get simulation started. We give a small timestep to avoid zero length
+    // steps
+    m_spPhysScene->UpdateSources(0.001f);
+    m_spPhysScene->Simulate(0.001f);
+    fLastSimTime = 0.001f;
+
+	// Setup the GameStateManger, add the PhysManager, the physScene, and the scene.
 	GameStateManager::getInstance()->physManager = m_pkPhysManager;
 	GameStateManager::getInstance()->physScene = m_spPhysScene;
 	GameStateManager::getInstance()->scene = m_spScene;
@@ -101,16 +104,9 @@ Flex::Initialize(){
 //---------------------------------------------------------------------------
 void Flex::Terminate()
 {
-    m_spTrnNode = 0;
-    m_spRotNode = 0;
-
-    // The PhysX scenes should be deleted before the SDK is shut down.
     m_spPhysScene = 0;
-
-    // The PhysX manager must be shut down after all PhysX content has been
-    // deleted and before the application terminates.
     m_pkPhysManager->Shutdown();
-
+	m_pCameraController = 0;
 	NiApplication::Terminate();    
 
 }
@@ -118,32 +114,73 @@ void Flex::Terminate()
 bool 
 Flex::CreateScene(){
 	GameStateManager::getInstance()->pushState(LoadState::getInstance());
-    if(!NiApplication::CreateScene())
+
+	if(!NiApplication::CreateScene())
         return false;
 
-    // Set the background color
+	NiAlphaAccumulator* pkAccum = NiNew NiAlphaAccumulator;
+    m_spRenderer->SetSorter(pkAccum);
+
+	// Set the background color
     NiColor kColor(0.5f, 0.6f, 1.0f);
     m_spRenderer->SetBackgroundColor(kColor);
 
-    NiAlphaAccumulator* pkAccum = NiNew NiAlphaAccumulator;
-    m_spRenderer->SetSorter(pkAccum);
+	if (!InitPhysics())
+    {
+        return false;
+    }
 
-    // We first create a PhysX scene and the Gamebryo wrapper for it. First
+    if (!InitEnvironment())
+    {
+        NiMessageBox("Cannot initialize environment!", "Flex Error");
+        return false;
+    }
+
+    if (!InitCamera())
+    {
+        NiMessageBox("The NIF file has no camera!", "Camera Error");
+        return false;
+    }
+
+	m_pPlayer = new Player();
+	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
+	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
+    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
+	totalFrame = m_pPlayer->GetTotalFrameCount();
+
+	GameStateManager::getInstance()->popState();
+
+	return true;
+}
+//---------------------------------------------------------------------------
+bool 
+Flex::InitPhysics(){
+	// We first create a PhysX scene and the Gamebryo wrapper for it. First
     // the wrapper.
     m_spPhysScene = NiNew NiPhysXScene();
+
+	// We are doing asynchronous simulation, and the scene wrapper must be
+    // informed.
+    m_spPhysScene->SetAsynchronousSimulation(false);
     
     // Then the PhysX scene
     NxSceneDesc kSceneDesc;
-    kSceneDesc.gravity.set(0.0f, -9.8f, 0.0f);
+    kSceneDesc.gravity.set(0.0f, -50.0f, 0.0f);
     NxScene* pkScene = m_pkPhysManager->m_pPhysXSDK->createScene(kSceneDesc);
     NIASSERT(pkScene != 0);
+	pkScene->setUserContactReport(&m_PhysContactReporter);
 	
     
     // Attach the physics scene to the wrapper
     m_spPhysScene->SetPhysXScene(pkScene);
-    
-    // Load some PhysX-enabled content.
-    NiStream kStream;
+	m_spPhysScene->SetUpdateDest(true);
+	m_spPhysScene->SetUpdateSrc(true);
+    return true;
+}
+//---------------------------------------------------------------------------
+bool
+Flex::InitEnvironment(){
+	NiStream kStream;
     if (!kStream.Load(ConvertMediaFilename("Environment.nif")))
 	{
         NIASSERT(0 && "Couldn't load nif file\n");
@@ -152,29 +189,14 @@ Flex::CreateScene(){
  
         return false;
     }
-
     m_spScene = (NiNode*) kStream.GetObjectAt(0);
     NIASSERT(NiIsKindOf(NiNode, m_spScene));
 
-	m_spCamera = FindFirstCamera(m_spScene);
-    if (!m_spCamera)
+	NiPhysXPropPtr physEnvironment;
+    if (!AddPhysicsProps(kStream, physEnvironment))
     {
-        NiMessageBox("The NIF file has no camera!", "Camera Error");
-        return false;
+        NiMessageBox("The NIF file has no physics objects!", "Warning");        
     }
-
-	// Look for a camera and the PhysX content. In this case, the PhysX
-    // content is the Flex scene.
-    NiPhysXPropPtr spEnvironmentProp = 0;
-    for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
-    {
-        if (NiIsKindOf(NiPhysXProp, kStream.GetObjectAt(ui)))
-        {
-            // We have found the PhysX content in the NIF.
-            spEnvironmentProp = (NiPhysXProp*)kStream.GetObjectAt(ui);
-        }
-    }
-    NIASSERT(spEnvironmentProp != 0);
 
 	// Repeat the process with the player.
     kStream.RemoveAllObjects();
@@ -187,26 +209,69 @@ Flex::CreateScene(){
         return false;
     }
 
-    // We know that this NIF file has the ball at location 0. Attach the
-    // ball to the scene graph.
+    // We know that this NIF file has the player at location 0. Attach the
+    // player to the scene graph.
     NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
     m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
 
-    // Look for the PhysX content.
-    NiPhysXPropPtr spPlayerProp = 0;
+	NiPhysXPropPtr physPlayer;
+    if (!AddPhysicsProps(kStream, physPlayer))
+    {
+        NiMessageBox("The NIF file has no physics objects!", "Warning");        
+    }
+
+	// Repeat the process with the walls
+	 kStream.RemoveAllObjects();
+	 NiPhysXPropPtr physWalls;
+    if (!InitWalls(kStream, physWalls))
+    {
+        NiMessageBox("The Walls didn't load!", "Warning");        
+    }
+
+	NiAVObject* player = m_spScene->GetObjectByName("character1");
+    for (int i = 0; i < physPlayer->GetDestinationsCount(); i++)
+    {
+        NiPhysXDest* src = physPlayer->GetDestinationAt(i);
+        if (NiIsKindOf(NiPhysXTransformDest, src))
+        {
+            NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+            if (s->GetTarget() == player)
+            {
+                m_player = s->GetActor();
+            }
+        }
+    }
+
+	InitCollisionCallbacks();
+    SetWallPhysicsEnabled(false, true);
+    return true;
+	
+
+}
+//---------------------------------------------------------------------------
+bool
+Flex::AddPhysicsProps(NiStream &kStream, NiPhysXPropPtr &propPtr){
+	// Look for the PhysX content. In this case, the PhysX
+    // content is the Flex scene.
+    NiPhysXPropPtr prop = 0;
     for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
     {
         if (NiIsKindOf(NiPhysXProp, kStream.GetObjectAt(ui)))
         {
             // We have found the PhysX content in the NIF.
-            spPlayerProp = (NiPhysXProp*)kStream.GetObjectAt(ui);
+            prop = (NiPhysXProp*)kStream.GetObjectAt(ui);
+            m_spPhysScene->AddProp(prop);
+            propPtr = prop;
         }
     }
-    NIASSERT(spPlayerProp != 0);
+    return (prop != 0); // We should have found at least one
 
-	// Repeat the process with the wall(s).
-    kStream.RemoveAllObjects();
-    if (!kStream.Load(ConvertMediaFilename("Wall2.nif")))
+}
+//---------------------------------------------------------------------------
+bool 
+Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
+	
+    if (!kStream.Load(ConvertMediaFilename("Wall1.nif")))
     {
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Wall1.nif. Aborting\n",
@@ -216,141 +281,123 @@ Flex::CreateScene(){
     }
 
     // We know that this NIF file has the wall at location 0. Attach the
-    // ball to the scene graph.
+    // wall to the scene graph.
     NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
     m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
 
-    // Look for the PhysX content.
-    NiPhysXPropPtr spWallProp = 0;
-    for (unsigned int ui = 1; ui < kStream.GetObjectCount(); ui++)
+    if (!AddPhysicsProps(kStream, propPtr))
     {
-        if (NiIsKindOf(NiPhysXProp, kStream.GetObjectAt(ui)))
-        {
-            // We have found the PhysX content in the NIF.
-            spWallProp = (NiPhysXProp*)kStream.GetObjectAt(ui);
-        }
+        NiMessageBox("The NIF file has no physics objects!", "Warning");        
     }
-    NIASSERT(spWallProp != 0);
-
-
-	//Add props
-	m_spPhysScene->AddProp(spEnvironmentProp);
-	m_spPhysScene->AddProp(spPlayerProp);
-	m_spPhysScene->AddProp(spWallProp);
-
-	m_spPhysScene->SetUpdateDest(true);
-
-	// Show Debug data
-	m_spPhysScene->SetDebugRender(true, m_spScene);
-
-	m_pPlayer = new Player();
-	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
-	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
-    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
-	totalFrame = m_pPlayer->GetTotalFrameCount();
-
-	GameStateManager::getInstance()->popState();
-    return true;
 }
+//---------------------------------------------------------------------------
+bool
+Flex::InitCamera(){
+	if (m_spScene)
+    {
+        m_spCamera = FindFirstCamera(m_spScene);
+		m_spCamera->LookAtWorldPoint(NiPoint3(0,0,0), NiPoint3(0,1,0));
+        m_spCamera->SetTranslate(NiPoint3::ZERO); // Needed to initialize orbit navigation   
+    }
+
+	NiAVObject* cameraRoot = m_spScene->GetObjectByName("camera1");
+	m_pCameraController = NiNew CameraController(this, cameraRoot);
+
+    return (m_spCamera != NULL);
+
+}
+
 //---------------------------------------------------------------------------
 
 void
 Flex::UpdateFrame(){
-	NiApplication::UpdateFrame(); // Calls process input
-
-	// Update the camera. This uses global time.
-    if (m_kTurret.Read())
-        m_spTrnNode->Update(m_fAccumTime);
-
-	if (this->GetInputSystem()){
-		pkKeyboard = this->GetInputSystem()->GetKeyboard();
-	}
-	//update skeleton position
-	PlayMotion();
-
-	// update the playerDisplay
-	m_playerDisplay->Update();
-
-	GameStateManager::getInstance()->update(m_fAccumTime);    
-
+	m_spPhysScene->UpdateSources(m_fAccumTime);
     m_spPhysScene->Simulate(m_fAccumTime);
     m_spPhysScene->FetchResults(m_fAccumTime, true);
     m_spPhysScene->UpdateDestinations(m_fAccumTime);
+    m_pCameraController->Update(m_fAccumTime);
 
-	// update the scene graph.
-    m_spScene->Update(m_fAccumTime);
+	NiApplication::UpdateFrame(); // Calls process input
+    m_spScene->Update(m_fAccumTime); // update the scene graph.
 
+	fLastSimTime = m_fAccumTime;
+
+	// For debugging: toggle physics viz
+	if (GetInputSystem()->GetKeyboard()->KeyWasPressed(NiInputKeyboard::KEY_P))
+	{
+		bool d = m_spPhysScene->GetDebugRender();
+	    m_spPhysScene->SetDebugRender(!d, m_spScene);
+	}
+	if (this->GetInputSystem()->GetKeyboard()->KeyWasPressed(NiInputKeyboard::KEY_UP)){
+		pkKeyboard = this->GetInputSystem()->GetKeyboard();
+		//update skeleton position
+		PlayMotion();
+
+		// update the playerDisplay
+		m_playerDisplay->Update();
+	}	
+
+	GameStateManager::getInstance()->update(m_fAccumTime);    
 
 }
 
 //---------------------------------------------------------------------------
 void 
-Flex::SetTurretControls(){   
+Flex::RenderFrame(){
+    NiApplication::RenderFrame();
+}
+//---------------------------------------------------------------------------
+void 
+Flex::processContacts(NxContactPair& pair, NxU32 events){
+    NxActor* a1 = pair.actors[0];
+    NxActor* a2 = pair.actors[1];
+	NxVec3 normalForce = pair.sumNormalForce;
 
-    m_spCamera->Update(0.0f);
-    m_spTrnNode = NiNew NiNode();
-    m_spTrnNode->SetTranslate(m_spCamera->GetWorldTranslate());
-    m_spCamera->SetTranslate(NiPoint3::ZERO);
-    m_spRotNode = NiNew NiNode();
-    m_spTrnNode->AttachChild(m_spRotNode);
-    m_spRotNode->SetRotate(m_spCamera->GetWorldRotate());
-    m_spCamera->SetRotate(NiMatrix3::IDENTITY);
-    m_spRotNode->AttachChild(m_spCamera);
-    m_spTrnNode->Update(0.0f);
-    
-    float fTrnSpeed = 0.05f;
-    float fRotSpeed = 0.005f;
+    NILOG(NIMESSAGE_GENERAL_0, "CONTACT: a1: %s a2: %s (%f)\n", 
+            a1->getName(), a2->getName(), normalForce.magnitude());
 
-    m_kTurret.SetStandardTrn(fTrnSpeed, m_spTrnNode);
-    m_kTurret.SetStandardRot(fRotSpeed, m_spTrnNode, m_spRotNode);
-    NiMatrix3 kRot;
-    kRot.SetCol(0, 1.0f, 0.0f, 0.0f);
-    kRot.SetCol(1, 0.0f, 0.0f, 1.0f);
-    kRot.SetCol(2, 0.0f, -1.0f, 0.0f);
-    m_kTurret.SetAxes(kRot);
-    
-    if (m_kTurret.GetInputDevice() == NiTurret::TUR_KEYBOARD)
+    SetWallPhysicsEnabled(true);
+}
+//---------------------------------------------------------------------------
+void 
+Flex::SetWallPhysicsEnabled(bool b, bool force){
+    if (force || b != m_wallPhysicsEnabled)
     {
-        m_kTurret.SetTrnButtonsKB(2,
-            NiInputKeyboard::KEY_W, NiInputKeyboard::KEY_S);
-        m_kTurret.SetTrnButtonsKB(1,
-            NiInputKeyboard::KEY_Q, NiInputKeyboard::KEY_E);
-        m_kTurret.SetTrnButtonsKB(0,
-            NiInputKeyboard::KEY_D, NiInputKeyboard::KEY_A);
-            
-        m_kTurret.SetRotButtonsKB(1,
-            NiInputKeyboard::KEY_J, NiInputKeyboard::KEY_L);
-        m_kTurret.SetRotButtonsKB(2,
-            NiInputKeyboard::KEY_I, NiInputKeyboard::KEY_K);
-		m_kTurret.SetRotButtonsKB(2,
-            NiInputKeyboard::KEY_U, NiInputKeyboard::KEY_O);
-    }
-    else if (m_kTurret.GetInputDevice() == NiTurret::TUR_GAMEPAD)
-    {
-        m_kTurret.SetTrnButtonsStickDirGP(0, 
-            NiInputGamePad::NIGP_STICK_LEFT, 
-            NiInputGamePad::NIGP_STICK_AXIS_V);
-        m_kTurret.SetTrnButtonsGP(1, 
-            NiInputGamePad::NIGP_L1, 
-            NiInputGamePad::NIGP_R1);
-        m_kTurret.SetTrnButtonsStickDirGP(2, 
-            NiInputGamePad::NIGP_STICK_LEFT, 
-            NiInputGamePad::NIGP_STICK_AXIS_H);
+        NiPhysXProp* phys = m_spPhysScene->GetPropAt(2);
+        for (int i = 0; i < phys->GetDestinationsCount(); i++)
+        {
+            NiPhysXDest* src = phys->GetDestinationAt(i);
+            if (NiIsKindOf(NiPhysXTransformDest, src))
+            {
+                NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+                if (s->GetActor() == m_player) continue;
 
-        m_kTurret.SetRotButtonsGP(0, NiInputGamePad::NIGP_NONE,
-            NiInputGamePad::NIGP_NONE);
-        m_kTurret.SetRotButtonsStickDirGP(1, 
-            NiInputGamePad::NIGP_STICK_RIGHT, 
-            NiInputGamePad::NIGP_STICK_AXIS_H);
-        m_kTurret.SetRotModifiers(1, NiInputGamePad::NIGP_MASK_NONE);
-        m_kTurret.SetRotButtonsStickDirGP(2, 
-            NiInputGamePad::NIGP_STICK_RIGHT, 
-            NiInputGamePad::NIGP_STICK_AXIS_V);
-        m_kTurret.SetRotModifiers(2, NiInputGamePad::NIGP_MASK_NONE);
+                if (b) s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
+                else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+            }
+        }
+        b = m_wallPhysicsEnabled;
     }
 }
 //---------------------------------------------------------------------------
+void 
+Flex::InitCollisionCallbacks(){
+    NiPhysXProp* phys = m_spPhysScene->GetPropAt(2);
+    for (int i = 0; i < phys->GetDestinationsCount(); i++)
+    {
+        NiPhysXDest* src = phys->GetDestinationAt(i);
+        if (NiIsKindOf(NiPhysXTransformDest, src))
+        {
+            NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+            if (s->GetActor() == m_player) continue;
 
+            m_spPhysScene->GetPhysXScene()->setActorPairFlags(
+			    *m_player, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+
+        }
+    }
+}
+//---------------------------------------------------------------------------
 void
 Flex::PlayMotion(){
 	if (pkKeyboard != NULL){

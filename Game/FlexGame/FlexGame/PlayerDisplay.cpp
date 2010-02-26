@@ -23,9 +23,9 @@ PlayerDisplay::DrawPlayer(Player* player){
 		//Draw Root Joint as a sphere
 		Joint* pJoint = pSkeleton->GetJointByIndex(root);
 
-		float tx = pJoint->m_translation[VX]*10;
-		float ty = pJoint->m_translation[VY]*10;
-		float tz = pJoint->m_translation[VZ]*10;
+		float tx = pJoint->m_translation[VX];
+		float ty = pJoint->m_translation[VY];
+		float tz = pJoint->m_translation[VZ];
 
 		NiAVObject* m_Sphere = (NiAVObject*)scene->GetObjectByName("root");
 		
@@ -37,18 +37,7 @@ PlayerDisplay::DrawPlayer(Player* player){
 			NiMatrix3 rot = NiMatrix3::IDENTITY;
 			rot.FromEulerAnglesYZX(Deg2Rad(pJoint->m_rotation[VY]),Deg2Rad(pJoint->m_rotation[VZ]),Deg2Rad(pJoint->m_rotation[VX]));
 			m_Sphere->SetRotate(rot);
-
-			/*if(ISLOCKED_MASK(pJoint->m_DOF, DOF_Y)) 
-				glRotatef(pJoint->m_rotation[VY], 0.0f, 1.0f,  0.0f);
-			if(ISLOCKED_MASK(pJoint->m_DOF, DOF_Z)) 
-				glRotatef(pJoint->m_rotation[VZ], 0.0f, 0.0f,  1.0f);
-			if(ISLOCKED_MASK(pJoint->m_DOF, DOF_X))
-				glRotatef(pJoint->m_rotation[VX], 1.0f, 0.0f,  0.0f);*/
-
-		}
-		//scene->AttachChild(m_Sphere);
-		
-		
+		}	
 
 		// Draw children joints
 		for (vector<Joint*>::const_iterator iter = pJoint->m_pChildren.begin(); iter != pJoint->m_pChildren.end(); ++iter)
@@ -57,7 +46,7 @@ PlayerDisplay::DrawPlayer(Player* player){
 		}
 
 		m_Sphere = (NiAVObject*)scene->GetObjectByName("root");
-		m_Sphere->SetTranslate( NiPoint3(m_Sphere->GetTranslate().x,m_Sphere->GetTranslate().y-8,m_Sphere->GetTranslate().z) );
+		m_Sphere->SetTranslate( NiPoint3(m_Sphere->GetTranslate().x,m_Sphere->GetTranslate().y,m_Sphere->GetTranslate().z) );
 
 
 	}
@@ -92,17 +81,10 @@ PlayerDisplay::DrawActorRec(Player *player, Joint *pJoint){
 			NiMatrix3 rot = NiMatrix3::IDENTITY;
 			rot.FromEulerAnglesYZX(Deg2Rad(pJoint->m_rotation[VY]),Deg2Rad(pJoint->m_rotation[VZ]),Deg2Rad(pJoint->m_rotation[VX]));
 			m_Sphere->SetRotate(rot);
-
-			/*if(ISLOCKED_MASK(pJoint->m_DOF, DOF_Y)) 
-				glRotatef(pJoint->m_rotation[VY], 0.0f, 1.0f,  0.0f);
-			if(ISLOCKED_MASK(pJoint->m_DOF, DOF_Z)) 
-				glRotatef(pJoint->m_rotation[VZ], 0.0f, 0.0f,  1.0f);
-			if(ISLOCKED_MASK(pJoint->m_DOF, DOF_X))
-				glRotatef(pJoint->m_rotation[VX], 1.0f, 0.0f,  0.0f);*/
 		}
 		
 		
-		//scene->AttachChild(m_Sphere);
+
 		
 		// Recursion
 		// Draw children joints
