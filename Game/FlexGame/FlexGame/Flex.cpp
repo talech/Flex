@@ -142,11 +142,11 @@ Flex::CreateScene(){
         return false;
     }
 
-	m_pPlayer = new Player();
-	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
-	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
-    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
-	totalFrame = m_pPlayer->GetTotalFrameCount();
+	//m_pPlayer = new Player();
+	//m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
+	//m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
+    //m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
+	//totalFrame = m_pPlayer->GetTotalFrameCount();
 
 	GameStateManager::getInstance()->popState();
 
@@ -228,17 +228,14 @@ Flex::InitEnvironment(){
         NiMessageBox("The Walls didn't load!", "Warning");        
     }
 
-	NiAVObject* player = m_spScene->GetObjectByName("character1");
+	NiAVObject* player = m_spScene->GetObjectByName("Bally1");
     for (int i = 0; i < physPlayer->GetDestinationsCount(); i++)
     {
-        NiPhysXDest* src = physPlayer->GetDestinationAt(i);
+        NiPhysXDest* src = physPlayer->GetDestinationAt(1);
         if (NiIsKindOf(NiPhysXTransformDest, src))
         {
             NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
-            if (s->GetTarget() == player)
-            {
-                m_player = s->GetActor();
-            }
+            m_player.push_back(s->GetActor());
         }
     }
 
@@ -271,7 +268,7 @@ Flex::AddPhysicsProps(NiStream &kStream, NiPhysXPropPtr &propPtr){
 bool 
 Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 	
-    if (!kStream.Load(ConvertMediaFilename("Wall1.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Wall3.nif")))
     {
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Wall1.nif. Aborting\n",
@@ -333,10 +330,10 @@ Flex::UpdateFrame(){
 		//update skeleton position
 		PlayMotion();
 
-		// update the playerDisplay
-		m_playerDisplay->Update();
+		
 	}	
-
+	// update the playerDisplay
+	//m_playerDisplay->Update();
 	GameStateManager::getInstance()->update(m_fAccumTime);    
 
 }
@@ -370,29 +367,47 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
             if (NiIsKindOf(NiPhysXTransformDest, src))
             {
                 NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
-                if (s->GetActor() == m_player) continue;
+                //if (findPlayerActor(s->GetActor())) s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);//continue;
 
                 if (b) s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
                 else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
             }
         }
+
         b = m_wallPhysicsEnabled;
     }
+	if(force){
+		NiPhysXProp* phys = m_spPhysScene->GetPropAt(1);
+        for (int i = 0; i < phys->GetDestinationsCount(); i++)
+        {
+            NiPhysXDest* src = phys->GetDestinationAt(i);
+            if (NiIsKindOf(NiPhysXTransformDest, src))
+            {
+                NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+                s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+            }
+		}
+	}
 }
 //---------------------------------------------------------------------------
 void 
 Flex::InitCollisionCallbacks(){
     NiPhysXProp* phys = m_spPhysScene->GetPropAt(2);
+	NiPhysXProp* spPlayerProp = m_spPhysScene->GetPropAt(1);
+	
     for (int i = 0; i < phys->GetDestinationsCount(); i++)
     {
         NiPhysXDest* src = phys->GetDestinationAt(i);
         if (NiIsKindOf(NiPhysXTransformDest, src))
         {
             NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
-            if (s->GetActor() == m_player) continue;
+            //if (findPlayerActor(s->GetActor())) continue;
 
-            m_spPhysScene->GetPhysXScene()->setActorPairFlags(
-			    *m_player, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+			for(int j = 0; j<spPlayerProp->GetDestinationsCount(); j++){    
+				NxActor* playerActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(j))->GetActor();
+				m_spPhysScene->GetPhysXScene()->setActorPairFlags(
+					*playerActor, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+			}
 
         }
     }
@@ -402,8 +417,8 @@ void
 Flex::PlayMotion(){
 	if (pkKeyboard != NULL){
 		if (pkKeyboard->KeyIsDown(NiInputKeyboard::KEY_UP)){
-			m_pPlayer->m_frameIndex = m_pPlayer->GetNextFrameIndex(m_pPlayer->m_frameIndex);
-			m_pPlayer->UpdateFrame(m_pPlayer->m_frameIndex);
+			//m_pPlayer->m_frameIndex = m_pPlayer->GetNextFrameIndex(m_pPlayer->m_frameIndex);
+			//m_pPlayer->UpdateFrame(m_pPlayer->m_frameIndex);
 		}
     }
 
@@ -419,5 +434,15 @@ Flex::ProcessInput(){
 
     NiInputKeyboard* pkKeyboard = GetInputSystem()->GetKeyboard();
 	GameStateManager::getInstance()->processKeyboard(pkKeyboard);
+}
+//---------------------------------------------------------------------------
+bool
+Flex::findPlayerActor(NxActor* actor){
+	vector<NxActor*>::iterator it;
+	it = std::find(m_player.begin(), m_player.end(), actor);
+	if (it == m_player.end()){
+		return false;
+	}
+	return true;
 }
 //---------------------------------------------------------------------------

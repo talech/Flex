@@ -42,7 +42,7 @@ void WallMoving::processKeyboard(Keyboard *keyboard)
 		if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_LEFT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_LEFT))
 		{
 			NxVec3 currPos = playerActor->getGlobalPosition();
-			if( currPos.x > -2 )
+			if( currPos.x > -5 )
 			{
 				playerActor->setGlobalPosition( currPos + NxVec3(-0.25, 0, 0) );
 			}
@@ -50,7 +50,7 @@ void WallMoving::processKeyboard(Keyboard *keyboard)
 		else if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_RIGHT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_RIGHT))
 		{
 			NxVec3 currPos = playerActor->getGlobalPosition();
-			if( currPos.x < 2 )
+			if( currPos.x < 5 )
 			{
 				playerActor->setGlobalPosition( currPos + NxVec3(0.25, 0, 0) );
 			}

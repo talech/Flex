@@ -12,10 +12,14 @@
 
 #include <list>
 #include <vector>
+#include <iterator>
+#include <algorithm>
 
 #include "PlayerDisplay.h"
 #include "GameStateManager.h"
 #include "CameraController.h"
+
+using namespace std;
 
 
 class Flex : public NiApplication
@@ -23,7 +27,7 @@ class Flex : public NiApplication
 public:
 	Flex();
 	~Flex();
-
+	
 	virtual bool Initialize();
     virtual void Terminate();
     virtual void UpdateFrame();
@@ -42,6 +46,7 @@ protected:
     void InitCollisionCallbacks();
 	
 	void PlayMotion();
+	bool findPlayerActor(NxActor* actor);
 	
 	//Player related members
 	Player* m_pPlayer;
@@ -69,7 +74,7 @@ protected:
 protected:
 
     CameraController* m_pCameraController;
-    NxActor* m_player;
+	vector<NxActor*> m_player;
     bool m_wallPhysicsEnabled;
 
     // Physics related members
