@@ -311,6 +311,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Defines.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Flex.h"
 				>
 			</File>

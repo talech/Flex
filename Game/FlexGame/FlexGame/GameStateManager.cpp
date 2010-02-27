@@ -87,3 +87,8 @@ void GameStateManager::startRunning()
 {
 	mRunning = true;
 }
+
+void GameStateManager::ResetWallPhysics()
+{
+	mApp->ResetWallPhysics();
+}

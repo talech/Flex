@@ -7,6 +7,11 @@
 
 #include <vector>
 #include <NiApplication.h>
+#include <efdPhysX/PhysXSDKManager.h>
+#include <NiPhysX.h>
+
+typedef NiInputMouse Mouse;
+typedef NiInputKeyboard Keyboard;
 
 using namespace std;
 
@@ -14,7 +19,7 @@ using namespace std;
 
 class PlayerDisplay{
 public:
-	PlayerDisplay(Player* pPlayer, NiNodePtr sScene);
+	PlayerDisplay(Player* pPlayer, NiNodePtr sScene, NiPhysXScenePtr physScene);
 	~PlayerDisplay();
 
 	virtual void Update();
@@ -30,7 +35,7 @@ protected:
 
 
 private:
-	
+	NiPhysXProp* spPlayerProp;
 	NiNodePtr scene;
 
 	bool isChild;

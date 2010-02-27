@@ -35,6 +35,8 @@ public:
 	virtual void RenderFrame();
 	virtual bool CreateScene();
 
+	void ResetWallPhysics();
+
 
 protected:
 	bool InitPhysics();

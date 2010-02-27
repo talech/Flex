@@ -9,6 +9,7 @@ typedef NiInputKeyboard Keyboard;
 typedef NiInputGamePad GamePad;
 
 #include <stack>
+#include "Defines.h"
 
 
 class GameState;
@@ -36,6 +37,7 @@ public:
 	void terminateApp();
 
 	void startRunning();
+	void ResetWallPhysics();
 
 	//void setCamera( NiCameraPtr cam );
 
@@ -44,9 +46,12 @@ public:
 	// Giving access to these for the sake of prototyping.  Play nice.
 	efdPhysX::PhysXSDKManager* physManager;
 	NiPhysXScenePtr physScene;
+	
 	NiNodePtr scene;
 
 	bool waitingForNewGame;
+	bool collision;
+	int currentWall;
 
 private:
 
@@ -60,7 +65,7 @@ private:
 
 	static GameStateManager mManager;
 
-	GameStateManager() { mRunning = false;  waitingForNewGame = false; }
+	GameStateManager() { mRunning = false;  waitingForNewGame = false; collision = false; currentWall = -1; }
 
 	
 };

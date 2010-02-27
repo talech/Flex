@@ -27,7 +27,9 @@ public:
 protected:
 
 	static Collided mCollided;
+	
 
 	Collided() {}
+	int waitTime;
 };
 #endif

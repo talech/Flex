@@ -1,9 +1,10 @@
 #include "PlayerDisplay.h"
 #include <CommonTypes.h>
 
-PlayerDisplay::PlayerDisplay(Player* pPlayer, NiNodePtr sScene){
+PlayerDisplay::PlayerDisplay(Player* pPlayer, NiNodePtr sScene, NiPhysXScenePtr physScene){
 	scene = sScene;
 	m_Player = pPlayer;
+	spPlayerProp = physScene->GetPropAt(1);
 }
 
 PlayerDisplay::~PlayerDisplay(){

@@ -36,8 +36,10 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 {
 	if( keyboard )
 	{
-		if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_SPACE ) )
+		if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_SPACE ) ){
+			GameStateManager::getInstance()->currentWall = randNum();
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
+		}
 	}
 	
 }

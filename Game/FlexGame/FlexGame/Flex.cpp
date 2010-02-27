@@ -8,6 +8,7 @@
 #include "InitializeState.h"
 #include "LoadState.h"
 #include "NewGameMenu.h"
+#include "WallMoving.h"
 
 
 NiEmbedGamebryoLicenseCode;
@@ -145,7 +146,7 @@ Flex::CreateScene(){
 	//m_pPlayer = new Player();
 	//m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
 	//m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
-    //m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene);
+    //m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
 	//totalFrame = m_pPlayer->GetTotalFrameCount();
 
 	GameStateManager::getInstance()->popState();
@@ -236,6 +237,7 @@ Flex::InitEnvironment(){
         {
             NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
             m_player.push_back(s->GetActor());
+			
         }
     }
 
@@ -267,25 +269,32 @@ Flex::AddPhysicsProps(NiStream &kStream, NiPhysXPropPtr &propPtr){
 //---------------------------------------------------------------------------
 bool 
 Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
+
+	for(int i = 1; i<6; i++){
 	
-    if (!kStream.Load(ConvertMediaFilename("Wall3.nif")))
-    {
-        NIASSERT(0 && "Couldn't load nif file\n");
-        NiMessageBox("Could not load Wall1.nif. Aborting\n",
-            "Missing nif file.");
- 
-        return false;
-    }
+		char name[128];
+		sprintf(name, "Wall%d.nif", i);
 
-    // We know that this NIF file has the wall at location 0. Attach the
-    // wall to the scene graph.
-    NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
-    m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+		if (!kStream.Load(ConvertMediaFilename(name)))
+		{
+			NIASSERT(0 && "Couldn't load nif file\n");
+			NiMessageBox("Could not load Wall1.nif. Aborting\n",
+				"Missing nif file.");
+	 
+			return false;
+		}
 
-    if (!AddPhysicsProps(kStream, propPtr))
-    {
-        NiMessageBox("The NIF file has no physics objects!", "Warning");        
-    }
+		// We know that this NIF file has the wall at location 0. Attach the
+		// wall to the scene graph.
+		NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
+		m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+
+		if (!AddPhysicsProps(kStream, propPtr))
+		{
+			NiMessageBox("The NIF file has no physics objects!", "Warning");        
+		}
+	}
+	return true;
 }
 //---------------------------------------------------------------------------
 bool
@@ -353,30 +362,57 @@ Flex::processContacts(NxContactPair& pair, NxU32 events){
     NILOG(NIMESSAGE_GENERAL_0, "CONTACT: a1: %s a2: %s (%f)\n", 
             a1->getName(), a2->getName(), normalForce.magnitude());
 
+	GameStateManager::getInstance()->collision = true;
     SetWallPhysicsEnabled(true);
+}
+//---------------------------------------------------------------------------
+void
+Flex::ResetWallPhysics(){
+	m_spPhysScene->RestoreSnapshotState(1);
+	SetWallPhysicsEnabled(false);
+	GameStateManager::getInstance()->collision = false;
+	GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 }
 //---------------------------------------------------------------------------
 void 
 Flex::SetWallPhysicsEnabled(bool b, bool force){
     if (force || b != m_wallPhysicsEnabled)
     {
-        NiPhysXProp* phys = m_spPhysScene->GetPropAt(2);
-        for (int i = 0; i < phys->GetDestinationsCount(); i++)
-        {
-            NiPhysXDest* src = phys->GetDestinationAt(i);
-            if (NiIsKindOf(NiPhysXTransformDest, src))
-            {
-                NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
-                //if (findPlayerActor(s->GetActor())) s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);//continue;
+		if(GameStateManager::getInstance()->collision)
+		{
+			NiPhysXProp* phys = m_spPhysScene->GetPropAt(GameStateManager::getInstance()->currentWall);
+				for (int i = 0; i < phys->GetDestinationsCount(); i++)
+				{
+					NiPhysXDest* src = phys->GetDestinationAt(i);
+					if (NiIsKindOf(NiPhysXTransformDest, src))
+					{
+						NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+						if(b)s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
+						else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+					}
+				}
+		}
+		else{
+			for(int j = 2; j<7; j++)
+			{
+				NiPhysXProp* phys = m_spPhysScene->GetPropAt(j);
+				for (int i = 0; i < phys->GetDestinationsCount(); i++)
+				{
+					NiPhysXDest* src = phys->GetDestinationAt(i);
+					if (NiIsKindOf(NiPhysXTransformDest, src))
+					{
+						NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+						//if (findPlayerActor(s->GetActor())) s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);//continue;
 
-                if (b) s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
-                else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
-            }
-        }
-
-        b = m_wallPhysicsEnabled;
-    }
-	if(force){
+						if (b) s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
+						else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+					}
+				}
+			}
+		}
+		b = m_wallPhysicsEnabled;
+	}
+	if(force && !GameStateManager::getInstance()->collision){
 		NiPhysXProp* phys = m_spPhysScene->GetPropAt(1);
         for (int i = 0; i < phys->GetDestinationsCount(); i++)
         {
@@ -392,25 +428,35 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 //---------------------------------------------------------------------------
 void 
 Flex::InitCollisionCallbacks(){
-    NiPhysXProp* phys = m_spPhysScene->GetPropAt(2);
+    
 	NiPhysXProp* spPlayerProp = m_spPhysScene->GetPropAt(1);
-	
-    for (int i = 0; i < phys->GetDestinationsCount(); i++)
-    {
-        NiPhysXDest* src = phys->GetDestinationAt(i);
-        if (NiIsKindOf(NiPhysXTransformDest, src))
-        {
-            NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
-            //if (findPlayerActor(s->GetActor())) continue;
+	for(int k = 2; k<7; k++)
+	{
+		NiPhysXProp* phys = m_spPhysScene->GetPropAt(k);
+		for (int i = 0; i < phys->GetDestinationsCount(); i++)
+		{
+			NiPhysXDest* src = phys->GetDestinationAt(i);
+			if (NiIsKindOf(NiPhysXTransformDest, src))
+			{
+				NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+				//if (findPlayerActor(s->GetActor())) continue;
 
-			for(int j = 0; j<spPlayerProp->GetDestinationsCount(); j++){    
-				NxActor* playerActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(j))->GetActor();
-				m_spPhysScene->GetPhysXScene()->setActorPairFlags(
-					*playerActor, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+				for(int j = 0; j<spPlayerProp->GetDestinationsCount(); j++)
+				{    
+					NxActor* playerActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(j))->GetActor();
+					m_spPhysScene->GetPhysXScene()->setActorPairFlags(
+						*playerActor, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+
+					NxVec3 currPos = playerActor->getGlobalPosition();
+					currPos.z = 14;
+					playerActor->setGlobalPosition( currPos  );
+				}
+
 			}
-
-        }
-    }
+		}
+	}
+	NiFixedString name = "Start";
+	m_spPhysScene->AddSnapshotState(name);
 }
 //---------------------------------------------------------------------------
 void
