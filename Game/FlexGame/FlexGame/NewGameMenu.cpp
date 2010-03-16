@@ -37,6 +37,8 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 	if( keyboard )
 	{
 		if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_SPACE ) ){
+			NiFixedString name = "Start";
+			GameStateManager::getInstance()->physScene->AddSnapshotState(name);
 			GameStateManager::getInstance()->currentWall = randNum();
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		}

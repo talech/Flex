@@ -10,6 +10,7 @@ WallMoving::~WallMoving()
 void WallMoving::enter()
 {
 	spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
+	//GameStateManager::getInstance()->pkSnapshot = spWallProp->GetSnapshot();
 	
 
 
@@ -36,47 +37,6 @@ void WallMoving::processMouse(Mouse *mouse)
 
 void WallMoving::processKeyboard(Keyboard *keyboard)
 {
-	NiPhysXProp* spPlayerProp = GameStateManager::getInstance()->physScene->GetPropAt(1);
-	
-	for(int i = 0; i < spPlayerProp->GetDestinationsCount(); i++)
-	{
-		NxActor* playerActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(i))->GetActor();
-		NxVec3 currPos = playerActor->getGlobalPosition();
-
-		if( keyboard )
-		{
-			if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_LEFT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_LEFT))
-			{
-				
-				if( currPos.x > -5 )
-				{
-					playerActor->setGlobalPosition( currPos + NxVec3(-0.25, 0, 0) );
-				}
-			}
-			else if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_RIGHT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_RIGHT))
-			{
-				if( currPos.x < 5 )
-				{
-					playerActor->setGlobalPosition( currPos + NxVec3(0.25, 0, 0) );
-				}
-			}
-			else if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_RIGHT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_UP))
-			{
-				if( currPos.z > 13 )
-				{
-					playerActor->setGlobalPosition( currPos + NxVec3(0, 0, -0.25) );
-				}
-				
-			}
-			else if (keyboard->KeyWasPressed(NiInputKeyboard::KEY_RIGHT) || keyboard->KeyIsDown(NiInputKeyboard::KEY_DOWN))
-			{
-				if( currPos.z < 15 )
-				{
-					playerActor->setGlobalPosition( currPos + NxVec3(0, 0, 0.25) );
-				}
-			}
-		}
-	}
 }
 
 void WallMoving::processGamePad(GamePad *gamepad)
@@ -97,16 +57,19 @@ void WallMoving::update(float delTime)
 		{
 			wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
 			position = wallActor->getGlobalPosition();
-			position[2] = position[2] + .2;
+			position[2] = position[2] - 1;
 			wallActor->setGlobalPosition(position);
 
 			
 
 		}
-		if(position[2]>30){
+		if(position[2]<(-30)){
+			//spWallProp->SetSnapshot(GameStateManager::getInstance()->pkSnapshot);
+			GameStateManager::getInstance()->physScene->RestoreSnapshotState(1);
 			GameStateManager::getInstance()->currentWall = randNum();
 			spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
-			GameStateManager::getInstance()->physScene->RestoreSnapshotState(1);
+			//GameStateManager::getInstance()->pkSnapshot = spWallProp->GetSnapshot();
+			
 		}
 	}
 

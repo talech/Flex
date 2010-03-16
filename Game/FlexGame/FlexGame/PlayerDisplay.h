@@ -6,6 +6,9 @@
 #include <Player.h>
 
 #include <vector>
+#include <iostream>
+#include <map>
+#include <string>
 #include <NiApplication.h>
 #include <efdPhysX/PhysXSDKManager.h>
 #include <NiPhysX.h>
@@ -23,8 +26,11 @@ public:
 	~PlayerDisplay();
 
 	virtual void Update();
+	void processKeyboard(Keyboard *keyboard);
 	virtual const Player* GetPlayer(){return m_Player;}
 	Player* m_Player;
+
+	map<string, int> actorSkeleton;
 
 protected:
 	void init();
@@ -39,6 +45,7 @@ private:
 	NiNodePtr scene;
 
 	bool isChild;
+	bool playing;
 	float Deg2Rad(float deg){return (deg*(3.14159265/180.0));}
 };
 

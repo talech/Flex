@@ -10,6 +10,7 @@
 #include <NiActorManager.h>
 #include <NxUserContactReport.h>
 
+
 #include <list>
 #include <vector>
 #include <iterator>
@@ -47,16 +48,19 @@ protected:
     void SetWallPhysicsEnabled(bool b, bool force = false);
     void InitCollisionCallbacks();
 	
-	void PlayMotion();
 	bool findPlayerActor(NxActor* actor);
 	
 	//Player related members
 	Player* m_pPlayer;
 	PlayerDisplay* m_playerDisplay;
 	int totalFrame;
+	map<string, int> actorSkeleton;
+	void setSkeletonMap();
 
 	// Keyboard
 	NiInputKeyboard* pkKeyboard;
+
+	
 
 protected:
 

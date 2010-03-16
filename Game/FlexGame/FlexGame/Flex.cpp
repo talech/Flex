@@ -143,10 +143,12 @@ Flex::CreateScene(){
         return false;
     }
 
-	//m_pPlayer = new Player();
-	//m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
-	//m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Dance/Swing2.amc");
-    //m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
+	m_pPlayer = new Player();
+	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
+	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
+	m_pPlayer->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.0);
+    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
+	m_playerDisplay->actorSkeleton = this->actorSkeleton;
 	//totalFrame = m_pPlayer->GetTotalFrameCount();
 
 	GameStateManager::getInstance()->popState();
@@ -243,6 +245,7 @@ Flex::InitEnvironment(){
 
 	InitCollisionCallbacks();
     SetWallPhysicsEnabled(false, true);
+	setSkeletonMap();
     return true;
 	
 
@@ -302,12 +305,16 @@ Flex::InitCamera(){
 	if (m_spScene)
     {
         m_spCamera = FindFirstCamera(m_spScene);
-		m_spCamera->LookAtWorldPoint(NiPoint3(0,0,0), NiPoint3(0,1,0));
-        m_spCamera->SetTranslate(NiPoint3::ZERO); // Needed to initialize orbit navigation   
+		//m_spCamera->LookAtWorldPoint(NiPoint3(0,0,0), NiPoint3(0,1,0));
+        //m_spCamera->SetTranslate(NiPoint3::ZERO); // Needed to initialize orbit navigation   
+
+		
     }
 
-	NiAVObject* cameraRoot = m_spScene->GetObjectByName("camera1");
-	m_pCameraController = NiNew CameraController(this, cameraRoot);
+	//NiAVObject* cameraRoot = m_spScene->GetObjectByName("camera1");
+	//m_pCameraController = NiNew CameraController(this, cameraRoot);
+
+
 
     return (m_spCamera != NULL);
 
@@ -317,11 +324,12 @@ Flex::InitCamera(){
 
 void
 Flex::UpdateFrame(){
+	
 	m_spPhysScene->UpdateSources(m_fAccumTime);
     m_spPhysScene->Simulate(m_fAccumTime);
     m_spPhysScene->FetchResults(m_fAccumTime, true);
     m_spPhysScene->UpdateDestinations(m_fAccumTime);
-    m_pCameraController->Update(m_fAccumTime);
+    //m_pCameraController->Update(m_fAccumTime);
 
 	NiApplication::UpdateFrame(); // Calls process input
     m_spScene->Update(m_fAccumTime); // update the scene graph.
@@ -334,15 +342,9 @@ Flex::UpdateFrame(){
 		bool d = m_spPhysScene->GetDebugRender();
 	    m_spPhysScene->SetDebugRender(!d, m_spScene);
 	}
-	if (this->GetInputSystem()->GetKeyboard()->KeyWasPressed(NiInputKeyboard::KEY_UP)){
-		pkKeyboard = this->GetInputSystem()->GetKeyboard();
-		//update skeleton position
-		PlayMotion();
-
-		
-	}	
+	
 	// update the playerDisplay
-	//m_playerDisplay->Update();
+	m_playerDisplay->Update();
 	GameStateManager::getInstance()->update(m_fAccumTime);    
 
 }
@@ -368,8 +370,8 @@ Flex::processContacts(NxContactPair& pair, NxU32 events){
 //---------------------------------------------------------------------------
 void
 Flex::ResetWallPhysics(){
-	m_spPhysScene->RestoreSnapshotState(1);
 	SetWallPhysicsEnabled(false);
+	m_spPhysScene->RestoreSnapshotState(1);
 	GameStateManager::getInstance()->collision = false;
 	GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 }
@@ -447,28 +449,14 @@ Flex::InitCollisionCallbacks(){
 					m_spPhysScene->GetPhysXScene()->setActorPairFlags(
 						*playerActor, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
 
-					NxVec3 currPos = playerActor->getGlobalPosition();
-					currPos.z = 14;
-					playerActor->setGlobalPosition( currPos  );
 				}
 
 			}
 		}
 	}
-	NiFixedString name = "Start";
-	m_spPhysScene->AddSnapshotState(name);
+	
 }
-//---------------------------------------------------------------------------
-void
-Flex::PlayMotion(){
-	if (pkKeyboard != NULL){
-		if (pkKeyboard->KeyIsDown(NiInputKeyboard::KEY_UP)){
-			//m_pPlayer->m_frameIndex = m_pPlayer->GetNextFrameIndex(m_pPlayer->m_frameIndex);
-			//m_pPlayer->UpdateFrame(m_pPlayer->m_frameIndex);
-		}
-    }
 
-}
 //---------------------------------------------------------------------------
 void 
 Flex::ProcessInput(){
@@ -479,6 +467,8 @@ Flex::ProcessInput(){
 	GameStateManager::getInstance()->processMouse( pkMouse );
 
     NiInputKeyboard* pkKeyboard = GetInputSystem()->GetKeyboard();
+
+	m_playerDisplay->processKeyboard(pkKeyboard);
 	GameStateManager::getInstance()->processKeyboard(pkKeyboard);
 }
 //---------------------------------------------------------------------------
@@ -492,3 +482,34 @@ Flex::findPlayerActor(NxActor* actor){
 	return true;
 }
 //---------------------------------------------------------------------------
+void
+Flex::setSkeletonMap(){
+	actorSkeleton["root"] = 0;
+	actorSkeleton["lhipjoint"] = 1;
+	actorSkeleton["lfemur"] = 2;
+	actorSkeleton["ltibia"] = 3;
+	actorSkeleton["lfoot"] = 4;
+	actorSkeleton["ltoes"] = 5;
+	actorSkeleton["rhipjoint"] = 6;
+	actorSkeleton["rfemur"] = 7;
+	actorSkeleton["rtibia"] = 8;
+	actorSkeleton["rfoot"] = 9;
+	actorSkeleton["rtoes"] = 10;
+	actorSkeleton["lowerback"] = 11;
+	actorSkeleton["upperback"] = 12;
+	actorSkeleton["thorax"] = 13;
+	actorSkeleton["lclavicle"] = 14;
+	actorSkeleton["lhumerus"] = 15;
+	actorSkeleton["lradius"] = 16;
+	actorSkeleton["lwrist"] = 17;
+	actorSkeleton["lhand"] = 18;
+	actorSkeleton["rclavicle"] = 19;
+	actorSkeleton["rhumerus"] = 20;
+	actorSkeleton["rradius"] = 21;
+	actorSkeleton["rwrist"] = 22;
+	actorSkeleton["rhand"] = 23;
+	actorSkeleton["lowerneck"] = 24;
+	actorSkeleton["upperneck"] = 25;
+	actorSkeleton["head"] = 26;
+
+}
