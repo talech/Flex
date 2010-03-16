@@ -276,7 +276,7 @@ Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 	for(int i = 1; i<6; i++){
 	
 		char name[128];
-		sprintf(name, "Wall%d.nif", i);
+		sprintf(name, "Walls/Wall%d.nif", i);
 
 		if (!kStream.Load(ConvertMediaFilename(name)))
 		{
