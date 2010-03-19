@@ -171,8 +171,8 @@ bool
 Flex::InitPlayer(){
 	m_pPlayer = new Player();
 	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
+	m_pPlayer->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.5);
 	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
-	m_pPlayer->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.0);
     m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
 	m_playerDisplay->actorSkeleton = this->actorSkeleton;
 	//totalFrame = m_pPlayer->GetTotalFrameCount();

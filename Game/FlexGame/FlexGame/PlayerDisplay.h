@@ -43,6 +43,7 @@ protected:
 private:
 	NiPhysXProp* spPlayerProp;
 	NiNodePtr scene;
+	Motion* motions[4];
 
 	bool isChild;
 	bool playing;

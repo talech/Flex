@@ -6,6 +6,25 @@ PlayerDisplay::PlayerDisplay(Player* pPlayer, NiNodePtr sScene, NiPhysXScenePtr 
 	m_Player = pPlayer;
 	spPlayerProp = physScene->GetPropAt(1);
 	playing = false; 
+
+	m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Boxing/female.Punch.amc",0.5);
+	m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Duck/duck_0.amc",0.5);
+	m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/CMU_Jump/MixJump.amc",0.5);
+	m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.5);
+
+	Motion* m0 = new Motion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Boxing/female.Punch.amc");
+	Motion* m1 = new Motion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Duck/duck_0.amc");
+	Motion* m2 = new Motion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/CMU_Jump/MixJump.amc");
+	Motion* m3 = new Motion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
+
+	motions[0] = m0;
+	motions[1] = m1;
+	motions[2] = m2;
+	motions[3] = m3;
+
+	m_Player->SetMotion(motions[3]);
+	m_Player->m_frameIndex = m_Player->m_startFrame;
+	
 }
 
 PlayerDisplay::~PlayerDisplay(){
@@ -14,10 +33,11 @@ PlayerDisplay::~PlayerDisplay(){
 void
 PlayerDisplay::Update(){
 	//Update frame to next frame if playing
-	if(playing){
-		m_Player->m_frameIndex = m_Player->GetNextFrameIndex(m_Player->m_frameIndex);
-		m_Player->UpdateFrame(m_Player->m_frameIndex);
-		m_Player->m_frameIndex = m_Player->GetNextFrameIndex(m_Player->m_frameIndex);
+	if(m_Player && playing){
+		int index = m_Player->GetNextFrameIndex(m_Player->m_frameIndex);
+		if(index == m_Player->m_endFrame) index = 0;
+		
+		m_Player->m_frameIndex = index;
 		m_Player->UpdateFrame(m_Player->m_frameIndex);
 	}
 
@@ -128,24 +148,24 @@ void
 PlayerDisplay::processKeyboard(Keyboard* keyboard){
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
 		playing = true;
+		
 	}
 	else if (keyboard->KeyIsDown(NiInputKeyboard::KEY_Q)){
-		m_Player->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Boxing/female.Punch.amc");
-		m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Boxing/female.Punch.amc",0.0);
+		m_Player->SetMotion(motions[0]);
+		m_Player->m_frameIndex = m_Player->m_startFrame;
 	}
 	else if (keyboard->KeyIsDown(NiInputKeyboard::KEY_W)){
-		m_Player->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Duck/duck_0.amc");
-		m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/Duck/duck_0.amc",0.0);
+		m_Player->SetMotion(motions[1]);
+		m_Player->m_frameIndex = m_Player->m_startFrame;
 	}
 	else if (keyboard->KeyIsDown(NiInputKeyboard::KEY_E)){
-		m_Player->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/CMU_Jump/MixJump.amc");
-		m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/CMU_Jump/MixJump.amc",0.0);
+		m_Player->SetMotion(motions[2]);
+		m_Player->m_frameIndex = m_Player->m_startFrame;
 	}
 	else if (keyboard->KeyIsDown(NiInputKeyboard::KEY_R)){
-		m_Player->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
-		m_Player->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.0);
+		m_Player->SetMotion(motions[3]);
+		m_Player->m_frameIndex = m_Player->m_startFrame;
 	}
-
 }
 
 
