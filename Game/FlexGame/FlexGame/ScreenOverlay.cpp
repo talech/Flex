@@ -106,7 +106,7 @@ bool ScreenOverlay::Create(Flex* app)
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
     ms_pkTheScreenOverlay->m_messages.resize(2);
-    ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("collided", width, height);
+    ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height);
 	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided", width, height);
     
     return true;
