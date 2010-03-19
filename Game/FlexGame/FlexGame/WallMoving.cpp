@@ -9,6 +9,7 @@ WallMoving::~WallMoving()
 
 void WallMoving::enter()
 {
+	GameStateManager::getInstance()->state = aWallMoving;
 	spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
 	//GameStateManager::getInstance()->pkSnapshot = spWallProp->GetSnapshot();
 	

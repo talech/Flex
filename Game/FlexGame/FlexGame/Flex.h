@@ -16,9 +16,11 @@
 #include <iterator>
 #include <algorithm>
 
+#include "Defines.h"
 #include "PlayerDisplay.h"
-#include "GameStateManager.h"
+#include "ScreenOverlay.h"
 #include "CameraController.h"
+
 
 using namespace std;
 
@@ -36,12 +38,18 @@ public:
 	virtual void RenderFrame();
 	virtual bool CreateScene();
 
+	virtual bool CreateRenderer();
+
+
 	void ResetWallPhysics();
+
+	
 
 
 protected:
 	bool InitPhysics();
 	bool InitCamera();
+	bool InitPlayer();
 	bool InitEnvironment();
     bool AddPhysicsProps(NiStream& kStream, NiPhysXPropPtr& propPtr);
 	bool InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr);
@@ -79,6 +87,7 @@ protected:
 
 protected:
 
+	NiAlphaAccumulator* pkAccum;
     CameraController* m_pCameraController;
 	vector<NxActor*> m_player;
     bool m_wallPhysicsEnabled;

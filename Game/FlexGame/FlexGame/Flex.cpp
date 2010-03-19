@@ -1,6 +1,7 @@
 #include <NiMain.h>
 #include <NiAnimation.h>
 #include <NiLicense.h>
+#include <NiUIManager.h>
 
 #include "GameStateManager.h"
 #include "GameState.h"
@@ -119,12 +120,8 @@ Flex::CreateScene(){
 	if(!NiApplication::CreateScene())
         return false;
 
-	NiAlphaAccumulator* pkAccum = NiNew NiAlphaAccumulator;
-    m_spRenderer->SetSorter(pkAccum);
-
-	// Set the background color
-    NiColor kColor(0.5f, 0.6f, 1.0f);
-    m_spRenderer->SetBackgroundColor(kColor);
+	pkAccum = NiNew NiAlphaAccumulator;
+   
 
 	if (!InitPhysics())
     {
@@ -143,6 +140,35 @@ Flex::CreateScene(){
         return false;
     }
 
+	if (!InitPlayer())
+    {
+        NiMessageBox("Cannot initialize Motions!", "Player Error");
+        return false;
+    }
+
+	if (!ScreenOverlay::Create(this))
+    {
+		NiMessageBox("Cannot initialize overlay!", "Flex Error");
+        return false;
+    }
+
+	
+
+	GameStateManager::getInstance()->popState();
+
+	return true;
+}
+//---------------------------------------------------------------------------
+bool 
+Flex::CreateRenderer(){
+	NiColor kColor(0.5f, 0.6f, 1.0f);
+    bool success = NiApplication::CreateRenderer();
+    if (success) m_spRenderer->SetBackgroundColor(kColor);
+    return success;
+}
+//---------------------------------------------------------------------------
+bool
+Flex::InitPlayer(){
 	m_pPlayer = new Player();
 	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
 	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
@@ -150,9 +176,6 @@ Flex::CreateScene(){
     m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
 	m_playerDisplay->actorSkeleton = this->actorSkeleton;
 	//totalFrame = m_pPlayer->GetTotalFrameCount();
-
-	GameStateManager::getInstance()->popState();
-
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -352,7 +375,10 @@ Flex::UpdateFrame(){
 //---------------------------------------------------------------------------
 void 
 Flex::RenderFrame(){
+    m_spRenderer->SetSorter(pkAccum);
+
     NiApplication::RenderFrame();
+    ScreenOverlay::Get()->Draw();
 }
 //---------------------------------------------------------------------------
 void 

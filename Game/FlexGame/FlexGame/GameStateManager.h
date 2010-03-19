@@ -47,12 +47,15 @@ public:
 	efdPhysX::PhysXSDKManager* physManager;
 	NiPhysXScenePtr physScene;
 	
+	
 	NiNodePtr scene;
 
 	bool waitingForNewGame;
 	bool collision;
 	int currentWall;
 	NiPhysXPropDesc* pkSnapshot;
+
+	ActiveState state;
 
 private:
 

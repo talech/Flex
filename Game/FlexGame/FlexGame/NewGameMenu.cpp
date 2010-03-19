@@ -11,6 +11,7 @@ NewGameMenu::~NewGameMenu()
 
 void NewGameMenu::enter()
 {
+	GameStateManager::getInstance()->state = aNewGame;
 	GameStateManager::getInstance()->waitingForNewGame = true;
 }
 

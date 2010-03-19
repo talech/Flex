@@ -268,6 +268,10 @@
 				RelativePath=".\PlayerDisplay.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ScreenOverlay.cpp"
+				>
+			</File>
 			<Filter
 				Name="FSM"
 				>
@@ -320,6 +324,10 @@
 			</File>
 			<File
 				RelativePath=".\PlayerDisplay.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScreenOverlay.h"
 				>
 			</File>
 			<Filter

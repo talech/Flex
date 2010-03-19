@@ -9,6 +9,7 @@
 
 
 static int randNum(){ return (rand() % 5 + 2); }
+enum ActiveState{aNewGame,aCollided,aGameOver,aWallMoving};
 
 
 #endif

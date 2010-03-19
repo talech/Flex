@@ -13,6 +13,7 @@ void Collided::enter()
 	waitTime = 0;
 	
 	
+	
 }
 
 void Collided::exit()
@@ -46,6 +47,7 @@ void Collided::processGamePad(GamePad *gamepad)
 void Collided::update(float delTime)
 {
 	waitTime++;
+	if(waitTime == 20) GameStateManager::getInstance()->state = aCollided;
 	if(waitTime == 50){
 		GameStateManager::getInstance()->ResetWallPhysics();
 			
