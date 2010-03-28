@@ -13,10 +13,17 @@
 #include <efdPhysX/PhysXSDKManager.h>
 #include <NiPhysX.h>
 
+#include "Defines.h"
+
+
 typedef NiInputMouse Mouse;
 typedef NiInputKeyboard Keyboard;
 
+
 using namespace std;
+
+class ViconDataClient;
+
 
 
 
@@ -38,12 +45,22 @@ protected:
 	virtual void DrawPlayer(Player* player);
 	virtual void DrawActorRec(Player* player, Joint* pJoint);
 
+	virtual void DataStream();
+	virtual void DrawMarkers();
+
 
 
 private:
+	// Vicon networked client
+	//ViconDataClient client; //("158.130.2.19", false);
+
 	NiPhysXProp* spPlayerProp;
 	NiNodePtr scene;
 	Motion* motions[4];
+
+	vector<vec3> unlabeledMarkers;
+	map<string,vec3> markers;
+	map<string,vec3> markersHead;
 
 	bool isChild;
 	bool playing;

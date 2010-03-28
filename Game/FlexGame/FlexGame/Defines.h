@@ -1,6 +1,7 @@
 #ifndef Defines_H
 #define Defines_H
 #include <stdlib.h>
+#include "ViconDataClient.h"
 
 /*
  * Use this space to define any constants (i.e. numbers, variables, etc.)
@@ -8,7 +9,10 @@
  */
 
 
+static ViconDataClient client("158.130.2.19", false);
+
 static int randNum(){ return (rand() % 5 + 2); }
+
 enum ActiveState{aNewGame,aCollided,aGameOver,aWallMoving};
 
 

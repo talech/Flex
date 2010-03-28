@@ -16,6 +16,7 @@
 #include <iterator>
 #include <algorithm>
 
+
 #include "Defines.h"
 #include "PlayerDisplay.h"
 #include "ScreenOverlay.h"
@@ -23,6 +24,7 @@
 
 
 using namespace std;
+
 
 
 class Flex : public NiApplication

@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(DirectXSDK)\Include&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib ViconDataStreamSDK_CPP.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
+				AdditionalLibraryDirectories="&quot;$(DirectXSDK)\Lib\x86&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\lib&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -74,6 +74,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				VerboseOutput="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -378,6 +379,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\sdk\Win32\Resource\NiSettingsDialogResource.rc"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Data Stream Files"
+			>
+			<File
+				RelativePath=".\ViconDataClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViconDataClient.h"
 				>
 			</File>
 		</Filter>

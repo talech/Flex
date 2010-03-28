@@ -5,7 +5,7 @@
 	Name="DataStream_Test"
 	ProjectGUID="{992AB194-7624-4B85-9CC1-1D59B357FEBA}"
 	RootNamespace="test"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="D:\aline\projects\ViconDatastream\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,7 +59,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ViconDataStreamSDK_CPP.lib"
+				OutputFile="..\bin\$(ProjectName).exe"
+				AdditionalLibraryDirectories="D:\aline\projects\ViconDatastream\lib"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -130,6 +135,8 @@
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool

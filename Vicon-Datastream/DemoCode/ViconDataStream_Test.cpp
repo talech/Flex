@@ -128,7 +128,7 @@ int main( int argc, char* argv[] )
   MyClient.SetAxisMapping( Direction::Forward, 
                            Direction::Left, 
                            Direction::Up ); // Z-up
-  // MyClient.SetGlobalUpAxis( Direction::Forward, 
+  // MyClient.SetAxisMapping( Direction::Forward, 
   //                           Direction::Up, 
   //                           Direction::Right ); // Y-up
 
