@@ -47,8 +47,9 @@ void Collided::processGamePad(GamePad *gamepad)
 void Collided::update(float delTime)
 {
 	waitTime++;
-	if(waitTime == 20) GameStateManager::getInstance()->state = aCollided;
-	if(waitTime == 50){
+	if(waitTime == 20) 
+		GameStateManager::getInstance()->state = aCollided;
+	if(waitTime == 35){
 		GameStateManager::getInstance()->ResetWallPhysics();
 			
 		//NiPhysXProp* spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);

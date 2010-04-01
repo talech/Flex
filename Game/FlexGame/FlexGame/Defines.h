@@ -9,7 +9,7 @@
  */
 
 
-static ViconDataClient client("158.130.2.19", false);
+//static ViconDataClient client("158.130.2.19", false);
 
 static int randNum(){ return (rand() % 5 + 2); }
 

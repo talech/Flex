@@ -34,5 +34,9 @@ protected:
 
 	
 	NiPhysXProp* spWallProp;
+	NiPhysXProp* spWallProp_2;
+	int currentWall_2;
+
+	void ResetWall();
 };
 #endif

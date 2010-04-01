@@ -24,6 +24,8 @@ PlayerDisplay::PlayerDisplay(Player* pPlayer, NiNodePtr sScene, NiPhysXScenePtr 
 
 	m_Player->SetMotion(motions[3]);
 	m_Player->m_frameIndex = m_Player->m_startFrame;
+
+	
 	
 	
 }
@@ -33,15 +35,17 @@ PlayerDisplay::~PlayerDisplay(){
 
 void
 PlayerDisplay::Update(){
-	//Update frame to next frame if playing
-	if(client.Tick()&& playing)
+	//Live Data Stream, use this if getting real-time data
+	/*if(client.Tick()&& playing)
 		DataStream();
 
 	if(m_Player && playing)
-		DrawMarkers();
+		DrawMarkers();*/
 	
 
-	/*if(m_Player && playing){
+	//Update frame to next frame if playing
+	//Motion from file, use this for testing any changes if not hooked up to the network
+	if(m_Player && playing){
 		int index = m_Player->GetNextFrameIndex(m_Player->m_frameIndex);
 		if(index == m_Player->m_endFrame) index = 0;
 		
@@ -50,7 +54,7 @@ PlayerDisplay::Update(){
 	}
 
 	if(m_Player)
-		DrawPlayer(m_Player);*/
+		DrawPlayer(m_Player);
 
 	
 }
@@ -78,15 +82,6 @@ PlayerDisplay::DrawPlayer(Player* player){
 		NxVec3 translation(m_transf.m_translation[0],m_transf.m_translation[1],m_transf.m_translation[2]-14);
 		jointActor->setGlobalPosition(translation);
 
-		
-		//Transformations
-		/*m_Sphere->SetTranslate( NiPoint3(tx,ty,tz) );
-		if (AMCRotationType == ROT_YZX){
-
-			NiMatrix3 rot = NiMatrix3::IDENTITY;
-			rot.FromEulerAnglesYZX(Deg2Rad(pJoint->m_rotation[VY]),Deg2Rad(pJoint->m_rotation[VZ]),Deg2Rad(pJoint->m_rotation[VX]));
-			m_Sphere->SetRotate(rot);
-		}	*/
 
 		// Draw children joints
 		for (vector<Joint*>::const_iterator iter = pJoint->m_pChildren.begin(); iter != pJoint->m_pChildren.end(); ++iter)
@@ -131,18 +126,6 @@ PlayerDisplay::DrawActorRec(Player *player, Joint *pJoint){
 		jointActor->setGlobalPosition(translation);
 		
 		
-
-		
-		//Transformations
-		/*
-		
-		if (AMCRotationType == ROT_YZX){
-			NiMatrix3 rot = NiMatrix3::IDENTITY;
-			rot.FromEulerAnglesYZX(Deg2Rad(pJoint->m_rotation[VY]),Deg2Rad(pJoint->m_rotation[VZ]),Deg2Rad(pJoint->m_rotation[VX]));
-			m_Sphere->SetRotate(rot);
-		}*/
-		
-		
 		// Recursion
 		// Draw children joints
 		for (vector<Joint*>::const_iterator iter = pJoint->m_pChildren.begin(); iter != pJoint->m_pChildren.end(); ++iter)
@@ -182,7 +165,7 @@ PlayerDisplay::processKeyboard(Keyboard* keyboard){
 
 void 
 PlayerDisplay::DataStream(){
-	int numSubjects = client.GetSubjectCount();
+	/*int numSubjects = client.GetSubjectCount();
 	for (int subject = 0; subject < numSubjects; subject++)
 	{
 		std::string subjectName = client.GetSubjectName(subject);
@@ -198,51 +181,51 @@ PlayerDisplay::DataStream(){
 			else
 				markers[markerName] = position;
 		}
-	}
+	}*/
 }
 
 void
 PlayerDisplay::DrawMarkers(){
-	std::map<std::string,vec3>::const_iterator it;
-	int index = 0;
-	for (it = markers.begin(); it != markers.end(); ++it)
-	{
-		std::string name = it->first;
-		vec3 pos = it->second;
+	//std::map<std::string,vec3>::const_iterator it;
+	//int index = 0;
+	//for (it = markers.begin(); it != markers.end(); ++it)
+	//{
+	//	std::string name = it->first;
+	//	vec3 pos = it->second;
 
-		if(index < spPlayerProp->GetDestinationsCount()-1){
-			NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
-			//scale to my world coordinates
-			NxVec3 translation((pos[0]/1000.0),(pos[1]/1000.0)+0.5,(pos[2]/1000.0)-14);
-			jointActor->setGlobalPosition(translation);
-		}
-		index++;
+	//	if(index < spPlayerProp->GetDestinationsCount()-1){
+	//		NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
+	//		//scale to my world coordinates
+	//		NxVec3 translation((pos[0]/1000.0),(pos[1]/1000.0)+0.5,(pos[2]/1000.0)-14);
+	//		jointActor->setGlobalPosition(translation);
+	//	}
+	//	index++;
 
-	}
+	//}
 
-	//make sure no unused markers are in the way 
-	while(index < spPlayerProp->GetDestinationsCount()-1){
-		NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
-		NxVec3 translation(0,-10,0);
-		jointActor->setGlobalPosition(translation);
-		index++;
-	}
+	////make sure no unused markers are in the way 
+	//while(index < spPlayerProp->GetDestinationsCount()-1){
+	//	NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
+	//	NxVec3 translation(0,-10,0);
+	//	jointActor->setGlobalPosition(translation);
+	//	index++;
+	//}
 
-	//draw head
-	float x = 0; float y = 0; float z = 0;
-	map<string,vec3>::const_iterator itH;
-	for (itH = markersHead.begin(); itH != markersHead.end(); ++itH)
-	{
-		x += itH->second[0];
-		y += itH->second[1];
-		z += itH->second[2];
-	}
-	x = x/4.0; y = y/4.0; z = z/4.0;
-	index = spPlayerProp->GetDestinationsCount()-1;
-	NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
-	//scale to my world coordinates
-	NxVec3 translation((x/1000.0),(y/1000.0)+0.5,(z/1000.0)-14);
-	jointActor->setGlobalPosition(translation);
+	////draw head
+	//float x = 0; float y = 0; float z = 0;
+	//map<string,vec3>::const_iterator itH;
+	//for (itH = markersHead.begin(); itH != markersHead.end(); ++itH)
+	//{
+	//	x += itH->second[0];
+	//	y += itH->second[1];
+	//	z += itH->second[2];
+	//}
+	//x = x/4.0; y = y/4.0; z = z/4.0;
+	//index = spPlayerProp->GetDestinationsCount()-1;
+	//NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
+	////scale to my world coordinates
+	//NxVec3 translation((x/1000.0),(y/1000.0)+0.5,(z/1000.0)+14);
+	//jointActor->setGlobalPosition(translation);
 
 
 }
