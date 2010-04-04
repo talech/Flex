@@ -13,7 +13,7 @@ NORMALMAPCOUNT = 0
 DARKMAPCOUNT = 0
 DETAILMAPCOUNT = 0
 BUMPMAPCOUNT = 0
-GLOSSMAPCOUNT = 1
+GLOSSMAPCOUNT = 0
 GLOWMAPCOUNT = 0
 CUSTOMMAP00COUNT = 0
 CUSTOMMAP01COUNT = 0
@@ -46,9 +46,9 @@ POINTLIGHTCOUNT = 0
 SPOTLIGHTCOUNT = 0
 DIRLIGHTCOUNT = 0
 SHADOWMAPFORLIGHT = 0
-SPECULAR = 1
+SPECULAR = 0
 AMBDIFFEMISSIVE = 0
-LIGHTINGMODE = 1
+LIGHTINGMODE = 0
 APPLYAMBIENT = 0
 BASEMAPALPHAONLY = 0
 APPLYEMISSIVE = 0
@@ -73,7 +73,6 @@ ALPHATEST = 0
 //---------------------------------------------------------------------------
 
 sampler2D Base;
-sampler2D Gloss;
 //---------------------------------------------------------------------------
 // Functions:
 //---------------------------------------------------------------------------
@@ -111,27 +110,6 @@ void TextureRGBASample(float2 TexCoord,
     if (Saturate)
     {
         ColorOut = saturate(ColorOut);
-    }
-    
-}
-//---------------------------------------------------------------------------
-/*
-
-    This fragment is responsible for sampling a texture and returning its value
-    as a RGB value.
-    
-*/
-
-void TextureRGBSample(float2 TexCoord,
-    sampler2D Sampler,
-    bool Saturate,
-    out float3 ColorOut)
-{
-
-    ColorOut.rgb = tex2D(Sampler, TexCoord).rgb;
-    if (Saturate)
-    {
-        ColorOut.rgb = saturate(ColorOut.rgb);
     }
     
 }
@@ -205,8 +183,7 @@ struct Input
 {
     float4 PosProjected : POSITION0;
     float4 DiffuseAccum : TEXCOORD0;
-    float3 SpecularAccum : TEXCOORD1;
-    float2 UVSet0 : TEXCOORD2;
+    float2 UVSet0 : TEXCOORD1;
 
 };
 
@@ -237,33 +214,25 @@ Output Main(Input In)
     TextureRGBASample(In.UVSet0, Base, bool(false), ColorOut_CallOut1);
 
 	// Function call #2
-    float3 ColorOut_CallOut2;
-    TextureRGBSample(In.UVSet0, Gloss, bool(false), ColorOut_CallOut2);
+    float3 Color_CallOut2;
+    float Opacity_CallOut2;
+    SplitColorAndOpacity(ColorOut_CallOut1, Color_CallOut2, Opacity_CallOut2);
 
 	// Function call #3
     float3 Output_CallOut3;
-    MultiplyFloat3(In.SpecularAccum, ColorOut_CallOut2, Output_CallOut3);
+    MultiplyFloat3(Color_CallOut0, Color_CallOut2, Output_CallOut3);
 
 	// Function call #4
-    float3 Color_CallOut4;
-    float Opacity_CallOut4;
-    SplitColorAndOpacity(ColorOut_CallOut1, Color_CallOut4, Opacity_CallOut4);
+    float Output_CallOut4;
+    MultiplyFloat(Opacity_CallOut0, Opacity_CallOut2, Output_CallOut4);
 
 	// Function call #5
-    float3 Output_CallOut5;
-    MultiplyFloat3(Color_CallOut0, Color_CallOut4, Output_CallOut5);
+    float3 OutputColor_CallOut5;
+    CompositeFinalRGBColor(Output_CallOut3, float3(0.0, 0.0, 0.0), 
+        OutputColor_CallOut5);
 
 	// Function call #6
-    float Output_CallOut6;
-    MultiplyFloat(Opacity_CallOut0, Opacity_CallOut4, Output_CallOut6);
-
-	// Function call #7
-    float3 OutputColor_CallOut7;
-    CompositeFinalRGBColor(Output_CallOut5, Output_CallOut3, 
-        OutputColor_CallOut7);
-
-	// Function call #8
-    CompositeFinalRGBAColor(OutputColor_CallOut7, Output_CallOut6, Out.Color0);
+    CompositeFinalRGBAColor(OutputColor_CallOut5, Output_CallOut4, Out.Color0);
 
     return Out;
 }

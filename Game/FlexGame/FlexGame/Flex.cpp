@@ -207,7 +207,7 @@ Flex::InitPhysics(){
 bool
 Flex::InitEnvironment(){
 	NiStream kStream;
-    if (!kStream.Load(ConvertMediaFilename("Environment.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Environment2.nif")))
 	{
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Wall1.nif. Aborting\n",
@@ -329,13 +329,13 @@ Flex::InitCamera(){
     {
         m_spCamera = FindFirstCamera(m_spScene);
 		//m_spCamera->LookAtWorldPoint(NiPoint3(0,0,0), NiPoint3(0,1,0));
-        //m_spCamera->SetTranslate(NiPoint3::ZERO); // Needed to initialize orbit navigation   
+  //      m_spCamera->SetTranslate(NiPoint3::ZERO); // Needed to initialize orbit navigation   
 
 		
     }
 
-	//NiAVObject* cameraRoot = m_spScene->GetObjectByName("camera1");
-	//m_pCameraController = NiNew CameraController(this, cameraRoot);
+	/*NiAVObject* cameraRoot = m_spScene->GetObjectByName("camera1");
+	m_pCameraController = NiNew CameraController(this, cameraRoot);*/
 
 
 
@@ -406,6 +406,7 @@ void
 Flex::SetWallPhysicsEnabled(bool b, bool force){
     if (force || b != m_wallPhysicsEnabled)
     {
+		//for collision
 		if(GameStateManager::getInstance()->collision)
 		{
 			NiPhysXProp* phys = m_spPhysScene->GetPropAt(GameStateManager::getInstance()->currentWall);
@@ -420,6 +421,7 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 					}
 				}
 		}
+		//for initialization 
 		else{
 			for(int j = 2; j<7; j++)
 			{
@@ -433,7 +435,12 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 						//if (findPlayerActor(s->GetActor())) s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);//continue;
 
 						if (b) s->GetActor()->clearBodyFlag(NX_BF_FROZEN);
-						else s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+						else{ 
+							s->GetActor()->raiseBodyFlag(NX_BF_FROZEN);
+							NxVec3 pos = s->GetActor()->getGlobalPosition();
+							pos[2] = -25;
+							s->GetActor()->setGlobalPosition(pos);
+						}
 					}
 				}
 			}

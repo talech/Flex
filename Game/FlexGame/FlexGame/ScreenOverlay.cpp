@@ -88,19 +88,19 @@ bool ScreenOverlay::Create(Flex* app)
     ms_pkTheScreenOverlay = NiNew ScreenOverlay(app);
 
     // Load HUD Font
-    /*ms_pkTheScreenOverlay->m_spHUDFont = NiFont::Create(pkRenderer,
+    ms_pkTheScreenOverlay->m_spHUDFont = NiFont::Create(pkRenderer,
         NiApplication::ConvertMediaFilename("Calibri_BA_18.nff"));
     if (!ms_pkTheScreenOverlay->m_spHUDFont)
     {
         NiOutputDebugString("Error: ScreenOverlay::Create() Failed\n");
         return false;
-    }*/
+    }
 
     // Initialize 2D Strings        
-    /*NiColorA kColor(1.0f, 1.0f, 1.0f, 1.0f);
-    ms_pkTheScreenOverlay->m_currentBehavior = NiNew Ni2DString(
+    NiColorA kColor(1.0f, 1.0f, 1.0f, 1.0f);
+    ms_pkTheScreenOverlay->m_Score = NiNew Ni2DString(
         ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 32, 
-        "Let's make this happen!", kColor, 0, 0);*/
+        "Let's make this happen!", kColor, 0, 0);
 
     // Initialize buttons
 	int width = app->DEFAULT_WIDTH;
@@ -119,8 +119,8 @@ void ScreenOverlay::Destroy()
 //---------------------------------------------------------------------------
 ScreenOverlay::~ScreenOverlay()
 {
-    //m_currentState = 0;
-    //m_spHUDFont = 0;
+    m_Score = 0;
+    m_spHUDFont = 0;
     for (unsigned int i = 0; i < m_messages.size(); i++) delete m_messages[i];
     m_app = 0;
 }
@@ -133,6 +133,7 @@ void ScreenOverlay::Draw()
     pkRenderer->SetScreenSpaceCameraData();
    
 	displayMessages(pkRenderer, GameStateManager::getInstance()->state);
+	displayScore(pkRenderer,ScoreKeeper::getInstance()->getScore());
 }
 
 
@@ -147,4 +148,19 @@ void ScreenOverlay::displayMessages(NiRenderer* pkRenderer, ActiveState state)
 	}
 	
 }
+
+void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score)
+{
+    m_Score->sprintf("Score: %d", score);
+            
+    float width, height;
+    m_spHUDFont->GetTextExtent(m_Score->GetText(), width, height);
+
+    unsigned int uiX = 5;
+    unsigned int uiY = m_app->DEFAULT_HEIGHT - (int) height;
+               
+    m_Score->SetPosition(5, 5);
+    m_Score->Draw(pkRenderer);
+}
+
 

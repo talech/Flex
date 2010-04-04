@@ -14,10 +14,10 @@ PROJLIGHTMAPCOUNT = 0
 PROJLIGHTMAPTYPES = 0
 PROJSHADOWMAPCOUNT = 0
 PROJSHADOWMAPTYPES = 0
-OUTPUTUVCOUNT = 2
+OUTPUTUVCOUNT = 0
 UVSET00 = 0
 UVSET00TEXOUTPUT = 0
-UVSET01 = 1
+UVSET01 = 0
 UVSET01TEXOUTPUT = 0
 UVSET02 = 0
 UVSET02TEXOUTPUT = 0
@@ -39,12 +39,12 @@ UVSET10 = 0
 UVSET10TEXOUTPUT = 0
 UVSET11 = 0
 UVSET11TEXOUTPUT = 0
-POINTLIGHTCOUNT = 1
-SPOTLIGHTCOUNT = 0
-DIRLIGHTCOUNT = 1
-VERTEXCOLORS = 1
+POINTLIGHTCOUNT = 0
+SPOTLIGHTCOUNT = 2
+DIRLIGHTCOUNT = 2
+VERTEXCOLORS = 0
 VERTEXLIGHTSONLY = 1
-AMBDIFFEMISSIVE = 2
+AMBDIFFEMISSIVE = 0
 LIGHTINGMODE = 1
 APPLYMODE = 1
 */
@@ -65,37 +65,37 @@ APPLYMODE = 1
 float4x4 g_World;
 float4x4 g_ViewProj;
 float4 g_MaterialEmissive;
+float4 g_MaterialDiffuse;
+float4 g_MaterialAmbient;
 float4 g_AmbientLight;
-float4 g_PointAmbient0;
-float4 g_PointDiffuse0;
-float4 g_PointSpecular0;
-float4 g_PointWorldPosition0;
-float4 g_PointAttenuation0;
 float4 g_DirAmbient0;
 float4 g_DirDiffuse0;
 float4 g_DirSpecular0;
 float4 g_DirWorldPosition0;
 float4 g_DirWorldDirection0;
+float4 g_DirAmbient;
+float4 g_DirDiffuse;
+float4 g_DirSpecular;
+float4 g_DirWorldPosition;
+float4 g_DirWorldDirection;
+float4 g_SpotAmbient0;
+float4 g_SpotDiffuse0;
+float4 g_SpotSpecular0;
+float4 g_SpotWorldPosition0;
+float4 g_SpotAttenuation0;
+float4 g_SpotWorldDirection0;
+float4 g_SpotSpotAttenuation0;
+float4 g_SpotAmbient;
+float4 g_SpotDiffuse;
+float4 g_SpotSpecular;
+float4 g_SpotWorldPosition;
+float4 g_SpotAttenuation;
+float4 g_SpotWorldDirection;
+float4 g_SpotSpotAttenuation;
 //---------------------------------------------------------------------------
 // Functions:
 //---------------------------------------------------------------------------
 
-/*
-
-    Separate a float4 into a float3 and a float.   
-    
-*/
-
-void SplitColorAndOpacity(float4 ColorAndOpacity,
-    out float3 Color,
-    out float Opacity)
-{
-
-    Color.rgb = ColorAndOpacity.rgb;
-    Opacity = ColorAndOpacity.a;
-    
-}
-//---------------------------------------------------------------------------
 /*
 
     This fragment is responsible for applying the view projection transform
@@ -163,6 +163,22 @@ void NormalizeFloat3(float3 VectorIn,
 {
 
     VectorOut = normalize(VectorIn);
+    
+}
+//---------------------------------------------------------------------------
+/*
+
+    Separate a float4 into a float3 and a float.   
+    
+*/
+
+void SplitColorAndOpacity(float4 ColorAndOpacity,
+    out float3 Color,
+    out float Opacity)
+{
+
+    Color.rgb = ColorAndOpacity.rgb;
+    Opacity = ColorAndOpacity.a;
     
 }
 //---------------------------------------------------------------------------
@@ -372,9 +388,6 @@ struct Input
 {
     float3 Position : POSITION0;
     float3 Normal : NORMAL0;
-    float2 UVSet0 : TEXCOORD0;
-    float2 UVSet1 : TEXCOORD1;
-    float4 VertexColors : COLOR0;
 
 };
 
@@ -386,8 +399,6 @@ struct Output
 {
     float4 PosProjected : POSITION0;
     float4 DiffuseAccum : TEXCOORD0;
-    float2 UVSet0 : TEXCOORD1;
-    float2 UVSet1 : TEXCOORD2;
 
 };
 
@@ -399,33 +410,33 @@ Output Main(Input In)
 {
     Output Out;
 	// Function call #0
-    float3 Color_CallOut0;
-    float Opacity_CallOut0;
-    SplitColorAndOpacity(In.VertexColors, Color_CallOut0, Opacity_CallOut0);
+    float4 WorldPos_CallOut0;
+    TransformPosition(In.Position, g_World, WorldPos_CallOut0);
 
 	// Function call #1
-    float4 WorldPos_CallOut1;
-    TransformPosition(In.Position, g_World, WorldPos_CallOut1);
+    ProjectPositionWorldToProj(WorldPos_CallOut0, g_ViewProj, Out.PosProjected);
 
 	// Function call #2
-    ProjectPositionWorldToProj(WorldPos_CallOut1, g_ViewProj, Out.PosProjected);
+    float3 WorldNrm_CallOut2;
+    TransformNormal(In.Normal, g_World, WorldNrm_CallOut2);
 
 	// Function call #3
-    float3 WorldNrm_CallOut3;
-    TransformNormal(In.Normal, g_World, WorldNrm_CallOut3);
+    float3 VectorOut_CallOut3;
+    NormalizeFloat3(WorldNrm_CallOut2, VectorOut_CallOut3);
 
 	// Function call #4
-    float3 VectorOut_CallOut4;
-    NormalizeFloat3(WorldNrm_CallOut3, VectorOut_CallOut4);
+    float3 Color_CallOut4;
+    float Opacity_CallOut4;
+    SplitColorAndOpacity(g_MaterialDiffuse, Color_CallOut4, Opacity_CallOut4);
 
 	// Function call #5
     float3 AmbientAccumOut_CallOut5;
     float3 DiffuseAccumOut_CallOut5;
     float3 SpecularAccumOut_CallOut5;
-    Light(WorldPos_CallOut1, VectorOut_CallOut4, int(1), bool(false), 
-        float(1.0), float3(0.0, 0.0, 0.0), g_PointWorldPosition0, 
-        g_PointAmbient0, g_PointDiffuse0, g_PointSpecular0, g_PointAttenuation0, 
-        float3(-1.0, -1.0, 0.0), float3(1.0, 0.0, 0.0), 
+    Light(WorldPos_CallOut0, VectorOut_CallOut3, int(0), bool(false), 
+        float(1.0), float3(0.0, 0.0, 0.0), g_DirWorldPosition0, g_DirAmbient0, 
+        g_DirDiffuse0, g_DirSpecular0, float3(0.0, 1.0, 0.0), 
+        float3(-1.0, -1.0, 0.0), g_DirWorldDirection0, 
         float4(1.0, 1.0, 1.0, 1.0), g_AmbientLight, float3(0.0, 0.0, 0.0), 
         float3(0.0, 0.0, 0.0), AmbientAccumOut_CallOut5, 
         DiffuseAccumOut_CallOut5, SpecularAccumOut_CallOut5);
@@ -434,29 +445,52 @@ Output Main(Input In)
     float3 AmbientAccumOut_CallOut6;
     float3 DiffuseAccumOut_CallOut6;
     float3 SpecularAccumOut_CallOut6;
-    Light(WorldPos_CallOut1, VectorOut_CallOut4, int(0), bool(false), 
-        float(1.0), float3(0.0, 0.0, 0.0), g_DirWorldPosition0, g_DirAmbient0, 
-        g_DirDiffuse0, g_DirSpecular0, float3(0.0, 1.0, 0.0), 
-        float3(-1.0, -1.0, 0.0), g_DirWorldDirection0, 
+    Light(WorldPos_CallOut0, VectorOut_CallOut3, int(0), bool(false), 
+        float(1.0), float3(0.0, 0.0, 0.0), g_DirWorldPosition, g_DirAmbient, 
+        g_DirDiffuse, g_DirSpecular, float3(0.0, 1.0, 0.0), 
+        float3(-1.0, -1.0, 0.0), g_DirWorldDirection, 
         float4(1.0, 1.0, 1.0, 1.0), AmbientAccumOut_CallOut5, 
         DiffuseAccumOut_CallOut5, float3(0.0, 0.0, 0.0), 
         AmbientAccumOut_CallOut6, DiffuseAccumOut_CallOut6, 
         SpecularAccumOut_CallOut6);
 
 	// Function call #7
-    float3 Diffuse_CallOut7;
-    float3 Specular_CallOut7;
-    ComputeShadingCoefficients(g_MaterialEmissive, Color_CallOut0, 
-        In.VertexColors, float3(1.0, 1.0, 1.0), float3(0.0, 0.0, 0.0), 
-        DiffuseAccumOut_CallOut6, AmbientAccumOut_CallOut6, bool(false), 
-        Diffuse_CallOut7, Specular_CallOut7);
+    float3 AmbientAccumOut_CallOut7;
+    float3 DiffuseAccumOut_CallOut7;
+    float3 SpecularAccumOut_CallOut7;
+    Light(WorldPos_CallOut0, VectorOut_CallOut3, int(2), bool(false), 
+        float(1.0), float3(0.0, 0.0, 0.0), g_SpotWorldPosition0, g_SpotAmbient0, 
+        g_SpotDiffuse0, g_SpotSpecular0, g_SpotAttenuation0, 
+        g_SpotSpotAttenuation0, g_SpotWorldDirection0, 
+        float4(1.0, 1.0, 1.0, 1.0), AmbientAccumOut_CallOut6, 
+        DiffuseAccumOut_CallOut6, float3(0.0, 0.0, 0.0), 
+        AmbientAccumOut_CallOut7, DiffuseAccumOut_CallOut7, 
+        SpecularAccumOut_CallOut7);
 
 	// Function call #8
-    CompositeFinalRGBAColor(Diffuse_CallOut7, Opacity_CallOut0, 
+    float3 AmbientAccumOut_CallOut8;
+    float3 DiffuseAccumOut_CallOut8;
+    float3 SpecularAccumOut_CallOut8;
+    Light(WorldPos_CallOut0, VectorOut_CallOut3, int(2), bool(false), 
+        float(1.0), float3(0.0, 0.0, 0.0), g_SpotWorldPosition, g_SpotAmbient, 
+        g_SpotDiffuse, g_SpotSpecular, g_SpotAttenuation, g_SpotSpotAttenuation, 
+        g_SpotWorldDirection, float4(1.0, 1.0, 1.0, 1.0), 
+        AmbientAccumOut_CallOut7, DiffuseAccumOut_CallOut7, 
+        float3(0.0, 0.0, 0.0), AmbientAccumOut_CallOut8, 
+        DiffuseAccumOut_CallOut8, SpecularAccumOut_CallOut8);
+
+	// Function call #9
+    float3 Diffuse_CallOut9;
+    float3 Specular_CallOut9;
+    ComputeShadingCoefficients(g_MaterialEmissive, Color_CallOut4, 
+        g_MaterialAmbient, float3(1.0, 1.0, 1.0), float3(0.0, 0.0, 0.0), 
+        DiffuseAccumOut_CallOut8, AmbientAccumOut_CallOut8, bool(false), 
+        Diffuse_CallOut9, Specular_CallOut9);
+
+	// Function call #10
+    CompositeFinalRGBAColor(Diffuse_CallOut9, Opacity_CallOut4, 
         Out.DiffuseAccum);
 
-    Out.UVSet0 = In.UVSet0;
-    Out.UVSet1 = In.UVSet1;
     return Out;
 }
 

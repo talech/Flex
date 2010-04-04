@@ -79,7 +79,7 @@ PlayerDisplay::DrawPlayer(Player* player){
 		
 		Transform m_transf = pJoint->m_global;
 		
-		NxVec3 translation(m_transf.m_translation[0],m_transf.m_translation[1],m_transf.m_translation[2]-14);
+		NxVec3 translation(m_transf.m_translation[0],m_transf.m_translation[1],m_transf.m_translation[2]+16);
 		jointActor->setGlobalPosition(translation);
 
 
@@ -122,7 +122,7 @@ PlayerDisplay::DrawActorRec(Player *player, Joint *pJoint){
 		Transform m_transf = pJoint->m_global;
 		
 		
-		NxVec3 translation(m_transf.m_translation[0],m_transf.m_translation[1],m_transf.m_translation[2]-14);
+		NxVec3 translation(m_transf.m_translation[0],m_transf.m_translation[1],m_transf.m_translation[2]+16);
 		jointActor->setGlobalPosition(translation);
 		
 		

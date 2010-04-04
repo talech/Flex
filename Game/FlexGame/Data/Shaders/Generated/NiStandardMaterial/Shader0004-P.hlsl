@@ -1,7 +1,7 @@
 #line 2 "c:\Users\Tammy\Documents\School\cis499\Flex_code\Game\FlexGame\Data\Shaders\Generated\NiStandardMaterial\Shader0004-P.hlsl"
 /*
 Shader description:
-APPLYMODE = 1
+APPLYMODE = 0
 WORLDPOSITION = 0
 WORLDNORMAL = 0
 WORLDNBT = 0
@@ -47,8 +47,8 @@ SPOTLIGHTCOUNT = 0
 DIRLIGHTCOUNT = 0
 SHADOWMAPFORLIGHT = 0
 SPECULAR = 0
-AMBDIFFEMISSIVE = 0
-LIGHTINGMODE = 1
+AMBDIFFEMISSIVE = 1
+LIGHTINGMODE = 0
 APPLYAMBIENT = 0
 BASEMAPALPHAONLY = 0
 APPLYEMISSIVE = 0
@@ -79,22 +79,6 @@ sampler2D Base;
 
 /*
 
-    Separate a float4 into a float3 and a float.   
-    
-*/
-
-void SplitColorAndOpacity(float4 ColorAndOpacity,
-    out float3 Color,
-    out float Opacity)
-{
-
-    Color.rgb = ColorAndOpacity.rgb;
-    Opacity = ColorAndOpacity.a;
-    
-}
-//---------------------------------------------------------------------------
-/*
-
     This fragment is responsible for sampling a texture and returning its value
     as a RGB value and an A value.
     
@@ -116,31 +100,17 @@ void TextureRGBASample(float2 TexCoord,
 //---------------------------------------------------------------------------
 /*
 
-    This fragment is responsible for multiplying two float3's. 
+    Separate a float4 into a float3 and a float.   
     
 */
 
-void MultiplyFloat3(float3 V1,
-    float3 V2,
-    out float3 Output)
+void SplitColorAndOpacity(float4 ColorAndOpacity,
+    out float3 Color,
+    out float Opacity)
 {
 
-    Output = V1 * V2;
-    
-}
-//---------------------------------------------------------------------------
-/*
-
-    This fragment is responsible for multiplying two floats. 
-    
-*/
-
-void MultiplyFloat(float V1,
-    float V2,
-    out float Output)
-{
-
-    Output = V1 * V2;
+    Color.rgb = ColorAndOpacity.rgb;
+    Opacity = ColorAndOpacity.a;
     
 }
 //---------------------------------------------------------------------------
@@ -182,8 +152,7 @@ void CompositeFinalRGBAColor(float3 FinalColor,
 struct Input
 {
     float4 PosProjected : POSITION0;
-    float4 DiffuseAccum : TEXCOORD0;
-    float2 UVSet0 : TEXCOORD1;
+    float2 UVSet0 : TEXCOORD0;
 
 };
 
@@ -205,34 +174,21 @@ Output Main(Input In)
 {
     Output Out;
 	// Function call #0
-    float3 Color_CallOut0;
-    float Opacity_CallOut0;
-    SplitColorAndOpacity(In.DiffuseAccum, Color_CallOut0, Opacity_CallOut0);
+    float4 ColorOut_CallOut0;
+    TextureRGBASample(In.UVSet0, Base, bool(false), ColorOut_CallOut0);
 
 	// Function call #1
-    float4 ColorOut_CallOut1;
-    TextureRGBASample(In.UVSet0, Base, bool(false), ColorOut_CallOut1);
+    float3 Color_CallOut1;
+    float Opacity_CallOut1;
+    SplitColorAndOpacity(ColorOut_CallOut0, Color_CallOut1, Opacity_CallOut1);
 
 	// Function call #2
-    float3 Color_CallOut2;
-    float Opacity_CallOut2;
-    SplitColorAndOpacity(ColorOut_CallOut1, Color_CallOut2, Opacity_CallOut2);
+    float3 OutputColor_CallOut2;
+    CompositeFinalRGBColor(Color_CallOut1, float3(0.0, 0.0, 0.0), 
+        OutputColor_CallOut2);
 
 	// Function call #3
-    float3 Output_CallOut3;
-    MultiplyFloat3(Color_CallOut0, Color_CallOut2, Output_CallOut3);
-
-	// Function call #4
-    float Output_CallOut4;
-    MultiplyFloat(Opacity_CallOut0, Opacity_CallOut2, Output_CallOut4);
-
-	// Function call #5
-    float3 OutputColor_CallOut5;
-    CompositeFinalRGBColor(Output_CallOut3, float3(0.0, 0.0, 0.0), 
-        OutputColor_CallOut5);
-
-	// Function call #6
-    CompositeFinalRGBAColor(OutputColor_CallOut5, Output_CallOut4, Out.Color0);
+    CompositeFinalRGBAColor(OutputColor_CallOut2, Opacity_CallOut1, Out.Color0);
 
     return Out;
 }

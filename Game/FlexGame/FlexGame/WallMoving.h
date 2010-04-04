@@ -2,6 +2,7 @@
 #define WallMoving_H
 
 #include "GameState.h"
+#include "ScoreKeeper.h"
 
 // The State that should sit on the bottom of the stack.
 // When the running state is popped, the application terminates,
@@ -30,12 +31,13 @@ protected:
 
 	static WallMoving mWallMoving;
 
-	WallMoving() {}
+	WallMoving() {vel = 1;}
 
 	
 	NiPhysXProp* spWallProp;
 	NiPhysXProp* spWallProp_2;
 	int currentWall_2;
+	float vel;
 
 	void ResetWall();
 };

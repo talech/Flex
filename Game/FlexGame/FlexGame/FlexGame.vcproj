@@ -175,9 +175,9 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_DebugWithReleaseLibs.vsprops"
+			InheritedPropertySheets="$(EMERGENT_PATH)\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops;$(EMERGENT_PATH)\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_PhysX_StaticLink.vsprops;$(EMERGENT_PATH)\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_DebugWithReleaseLibs.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Target_StaticLinkedExecutable.vsprops"
 			CharacterSet="0"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -196,15 +196,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
+				Optimization="0"
+				EnableIntrinsicFunctions="false"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(DirectXSDK)\Include&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
+				PreprocessorDefinitions="_WINDOWS;_CRT_SECURE_NO_DEPRECATE;HAS_FMOD"
+				ExceptionHandling="1"
+				RuntimeLibrary="3"
+				EnableFunctionLevelLinking="false"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
+				WarningLevel="4"
+				DebugInformationFormat="4"
+				DisableSpecificWarnings="4305;4244;4018"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -217,13 +220,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiApplication.lib NiVisualTracker.lib NiInput.lib NiDX9Renderer.lib NiD3D10Renderer.lib NiSample.lib NiFont.lib NiAnimation.lib NiParticle.lib NiUserInterface.lib NiCursor.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib ViconDataStreamSDK_CPP.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(DirectXSDK)\Lib\x86&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\lib&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
+				OptimizeReferences="0"
+				EnableCOMDATFolding="0"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -267,6 +271,10 @@
 			</File>
 			<File
 				RelativePath=".\PlayerDisplay.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ScoreKeeper.cpp"
 				>
 			</File>
 			<File
@@ -325,6 +333,10 @@
 			</File>
 			<File
 				RelativePath=".\PlayerDisplay.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScoreKeeper.h"
 				>
 			</File>
 			<File

@@ -6,6 +6,8 @@
 #include <Ni2DString.h>
 #include <vector>
 
+#include "ScoreKeeper.h"
+
 class Flex;
 class ScreenMessage;
 
@@ -28,9 +30,11 @@ public:
 protected:
 
 	void displayMessages(NiRenderer* pkRenderer, ActiveState state); 
-    //void displayButtons(NiRenderer* pkRenderer, const char* name); 
+    void displayScore(NiRenderer* pkRenderer, int score); 
 
-    //NiFontPtr m_spHUDFont;
+    NiFontPtr m_spHUDFont;
+	Ni2DStringPtr m_Score;
+
     ActiveState m_currentState;
     std::vector<ScreenMessage*> m_messages;    
     Flex* m_app;

@@ -12,6 +12,7 @@ typedef NiInputGamePad GamePad;
 #include "Defines.h"
 
 
+
 class GameState;
 class Flex;
 
@@ -69,7 +70,7 @@ private:
 
 	static GameStateManager mManager;
 
-	GameStateManager() { mRunning = false;  waitingForNewGame = false; collision = false; currentWall = -1; }
+	GameStateManager() { mRunning = false;  waitingForNewGame = false; collision = false; currentWall = 2; }
 
 	
 };

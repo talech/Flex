@@ -1,6 +1,7 @@
 #include "WallMoving.h"
 #include "Collided.h"
 
+
 WallMoving WallMoving::mWallMoving;
 
 WallMoving::~WallMoving()
@@ -63,21 +64,22 @@ void WallMoving::update(float delTime)
 		{
 			wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
 			position = wallActor->getGlobalPosition();
-			position[2] = position[2] - 1.5;
+			position[2] = position[2] + vel;
 			wallActor->setGlobalPosition(position);
 		}
-		if(position[2]<(0)){
+		if(position[2]>(0)){
 			NxActor* wallActor_2;
 			NxVec3 position_2;
 			for(int i = 0; i < spWallProp_2->GetDestinationsCount(); i++)
 			{
 				wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
 				position_2 = wallActor_2->getGlobalPosition();
-				position_2[2] = position_2[2] - 1.5;
+				position_2[2] = position_2[2] + vel;
 				wallActor_2->setGlobalPosition(position_2);
 			}
 		}
-		if(position[2]<(-20)){
+		if(position[2]>(20)){
+			ScoreKeeper::getInstance()->scoreWall();
 			ResetWall();
 			GameStateManager::getInstance()->currentWall = currentWall_2;
 			do{ currentWall_2 = randNum(); }
@@ -100,7 +102,7 @@ WallMoving::ResetWall(){
 	{
 		wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
 		position = wallActor->getGlobalPosition();
-		position[2] = 17;
+		position[2] = -25;
 		wallActor->setGlobalPosition(position);
 	}
 }
