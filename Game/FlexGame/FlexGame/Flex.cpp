@@ -107,8 +107,10 @@ Flex::Initialize(){
 void Flex::Terminate()
 {
     m_spPhysScene = 0;
-    m_pkPhysManager->Shutdown();
 	m_pCameraController = 0;
+	m_spScene = 0;
+	pkAccum = 0;
+	m_pkPhysManager->Shutdown();
 	NiApplication::Terminate();    
 
 }

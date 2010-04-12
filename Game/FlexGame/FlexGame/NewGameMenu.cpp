@@ -41,6 +41,7 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 			NiFixedString name = "Start";
 			GameStateManager::getInstance()->physScene->AddSnapshotState(name);
 			GameStateManager::getInstance()->currentWall = randNum();
+			GameStateManager::getInstance()->soundSystem->PlaySong();
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		}
 	}

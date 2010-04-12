@@ -96,11 +96,6 @@ PlayerDisplay::DrawActorRec(Player *player, Joint *pJoint){
 	Skeleton* pSkeleton = player->GetSkeleton();
 
 	isChild = false;
-	float tx = pJoint->m_translation[VX];
-	float ty = pJoint->m_translation[VY];
-	float tz = pJoint->m_translation[VZ];
-
-	
 
 	// allocate space for a zero-terminated copy of the string
 	char *charPtrString = new char[pJoint->m_name.size()+1];
@@ -196,7 +191,7 @@ PlayerDisplay::DrawMarkers(){
 	//	if(index < spPlayerProp->GetDestinationsCount()-1){
 	//		NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
 	//		//scale to my world coordinates
-	//		NxVec3 translation((pos[0]/1000.0),(pos[1]/1000.0)+0.5,(pos[2]/1000.0)-14);
+	//		NxVec3 translation((pos[0]/1000.0),(pos[1]/1000.0)+0.5,(pos[2]/1000.0)+16);
 	//		jointActor->setGlobalPosition(translation);
 	//	}
 	//	index++;

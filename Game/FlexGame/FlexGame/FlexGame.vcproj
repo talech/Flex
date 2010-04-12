@@ -199,7 +199,7 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(DirectXSDK)\Include&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(DirectXSDK)\Include&quot;;&quot;$(FMOD)\api\inc&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
 				PreprocessorDefinitions="_WINDOWS;_CRT_SECURE_NO_DEPRECATE;HAS_FMOD"
 				ExceptionHandling="1"
 				RuntimeLibrary="3"
@@ -220,9 +220,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib ViconDataStreamSDK_CPP.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib ViconDataStreamSDK_CPP.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib fmodex_vc.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(DirectXSDK)\Lib\x86&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\lib&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
+				AdditionalLibraryDirectories="&quot;$(DirectXSDK)\Lib\x86&quot;;&quot;$(FMOD)\api\lib&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\lib&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="0"
@@ -279,6 +279,10 @@
 			</File>
 			<File
 				RelativePath=".\ScreenOverlay.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SoundSystem.cpp"
 				>
 			</File>
 			<Filter
@@ -341,6 +345,10 @@
 			</File>
 			<File
 				RelativePath=".\ScreenOverlay.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SoundSystem.h"
 				>
 			</File>
 			<Filter

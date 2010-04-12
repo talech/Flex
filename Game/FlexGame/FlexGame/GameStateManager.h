@@ -10,6 +10,7 @@ typedef NiInputGamePad GamePad;
 
 #include <stack>
 #include "Defines.h"
+#include "SoundSystem.h"
 
 
 
@@ -47,6 +48,7 @@ public:
 	// Giving access to these for the sake of prototyping.  Play nice.
 	efdPhysX::PhysXSDKManager* physManager;
 	NiPhysXScenePtr physScene;
+	SoundSystem* soundSystem;
 	
 	
 	NiNodePtr scene;
@@ -70,7 +72,12 @@ private:
 
 	static GameStateManager mManager;
 
-	GameStateManager() { mRunning = false;  waitingForNewGame = false; collision = false; currentWall = 2; }
+	GameStateManager() { 
+		mRunning = false;  
+		waitingForNewGame = false; 
+		collision = false; 
+		currentWall = 2; //point to a valid wall Index to prevent errors
+		soundSystem = new SoundSystem();}
 
 	
 };
