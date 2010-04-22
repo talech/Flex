@@ -40,6 +40,7 @@ public:
 
 	void startRunning();
 	void ResetWallPhysics();
+	void toggleEnableWall(bool enable);
 
 	//void setCamera( NiCameraPtr cam );
 
@@ -59,6 +60,7 @@ public:
 	NiPhysXPropDesc* pkSnapshot;
 
 	ActiveState state;
+	GameMode mode;
 
 private:
 

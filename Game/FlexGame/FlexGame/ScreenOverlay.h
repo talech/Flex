@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ScoreKeeper.h"
+#include "GameStateManager.h"
 
 class Flex;
 class ScreenMessage;

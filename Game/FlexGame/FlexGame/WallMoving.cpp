@@ -1,5 +1,6 @@
 #include "WallMoving.h"
 #include "Collided.h"
+#include "Paused.h"
 
 
 WallMoving WallMoving::mWallMoving;
@@ -10,6 +11,9 @@ WallMoving::~WallMoving()
 
 void WallMoving::enter()
 {
+	NiFixedString name = "Start";
+	GameStateManager::getInstance()->physScene->AddSnapshotState(name);
+
 	GameStateManager::getInstance()->state = aWallMoving;
 	spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
 	//GameStateManager::getInstance()->pkSnapshot = spWallProp->GetSnapshot();
@@ -19,9 +23,7 @@ void WallMoving::enter()
 
 	spWallProp_2 = GameStateManager::getInstance()->physScene->GetPropAt(currentWall_2);
 	
-
-
-	
+	GameStateManager::getInstance()->toggleEnableWall(true);	
 	
 }
 
@@ -44,6 +46,22 @@ void WallMoving::processMouse(Mouse *mouse)
 
 void WallMoving::processKeyboard(Keyboard *keyboard)
 {
+	//toggle between paused game
+	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
+		GameStateManager::getInstance()->state = aPaused;
+		GameStateManager::getInstance()->changeState(Paused::getInstance());
+		
+	}
+
+	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_UP)){
+		vel = vel + 0.1;	
+	}
+
+	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_DOWN)){
+		if(vel>0.1)
+			vel = vel - 0.1;	
+	}
+	
 }
 
 void WallMoving::processGamePad(GamePad *gamepad)
@@ -59,12 +77,17 @@ void WallMoving::update(float delTime)
 		NxActor* wallActor;
 		NxVec3 position;
 
+		if(vel < 2.1){
+			if((ScoreKeeper::getInstance()->getScore()%10) == 0)
+				vel += 0.1;	
+		}
+
 		
 		for(int i = 0; i < spWallProp->GetDestinationsCount(); i++)
 		{
 			wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
 			position = wallActor->getGlobalPosition();
-			position[2] = position[2] + vel;
+			position[2] = position[2] + (1*vel);
 			wallActor->setGlobalPosition(position);
 		}
 		if(position[2]>(0)){
@@ -74,14 +97,17 @@ void WallMoving::update(float delTime)
 			{
 				wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
 				position_2 = wallActor_2->getGlobalPosition();
-				position_2[2] = position_2[2] + vel;
+				position_2[2] = position_2[2] + (1*vel);
 				wallActor_2->setGlobalPosition(position_2);
 			}
 		}
 		if(position[2]>(20)){
 			ScoreKeeper::getInstance()->scoreWall();
-			ResetWall();
+			GameStateManager::getInstance()->toggleEnableWall(false);
 			GameStateManager::getInstance()->currentWall = currentWall_2;
+			ResetWall();
+			GameStateManager::getInstance()->toggleEnableWall(true);
+
 			do{ currentWall_2 = randNum(); }
 			while(currentWall_2 == GameStateManager::getInstance()->currentWall);
 

@@ -74,10 +74,10 @@ Flex::Initialize(){
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_SKIN_WIDTH, 0.01f);
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_BOUNCE_THRESHOLD, -2.0f);
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_AXES, 2.0f);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_AXES, 1.0f);
     m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_COLLISION_SHAPES, 1.0f);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_ACTOR_AXES, 5.0);
-    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_LIN_VELOCITY, 5.0);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_ACTOR_AXES, 0.5);
+    m_pkPhysManager->m_pPhysXSDK->setParameter(NX_VISUALIZE_BODY_LIN_VELOCITY, 0.5);
 
     if (!NiApplication::Initialize())
         return false;
@@ -171,11 +171,11 @@ Flex::CreateRenderer(){
 //---------------------------------------------------------------------------
 bool
 Flex::InitPlayer(){
-	m_pPlayer = new Player();
+	/*m_pPlayer = new Player();
 	m_pPlayer->LoadSkeleton("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Actor.asf");
 	m_pPlayer->NormalizeMotionToFloorHeight("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc",0.5);
-	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");
-    m_playerDisplay = new PlayerDisplay(m_pPlayer,m_spScene, m_spPhysScene);
+	m_pPlayer->LoadMotion("C:/Users/Tammy/Documents/School/cis499/Flex_code/EMG/Bin/Database/Motion/MartialArts/male_frontkick.amc");*/
+    m_playerDisplay = new PlayerDisplay(NULL,m_spScene, m_spPhysScene);
 	m_playerDisplay->actorSkeleton = this->actorSkeleton;
 	//totalFrame = m_pPlayer->GetTotalFrameCount();
 	return true;
@@ -228,7 +228,7 @@ Flex::InitEnvironment(){
 
 	// Repeat the process with the player.
     kStream.RemoveAllObjects();
-    if (!kStream.Load(ConvertMediaFilename("Player.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Skeleton2.nif")))
     {
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Player.nif. Aborting\n",
@@ -298,7 +298,7 @@ Flex::AddPhysicsProps(NiStream &kStream, NiPhysXPropPtr &propPtr){
 bool 
 Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 
-	for(int i = 1; i<6; i++){
+	for(int i = 1; i<NUM_WALLS+1; i++){
 	
 		char name[128];
 		sprintf(name, "Walls/Wall%d.nif", i);
@@ -322,6 +322,32 @@ Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 			NiMessageBox("The NIF file has no physics objects!", "Warning");        
 		}
 	}
+
+
+	//init red block = collision block
+	if (!kStream.Load(ConvertMediaFilename("redBlock.nif")))
+	{
+		NIASSERT(0 && "Couldn't load nif file\n");
+		NiMessageBox("Could not load Wall1.nif. Aborting\n",
+			"Missing nif file.");
+	
+		return false;
+	}
+
+	// We know that this NIF file has the wall at location 0. Attach the
+	// wall to the scene graph.
+	NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
+	m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+
+	if (!AddPhysicsProps(kStream, propPtr))
+	{
+		NiMessageBox("The NIF file has no physics objects!", "Warning");        
+	}
+	redBlock = ((NiPhysXRigidBodyDest*)propPtr->GetDestinationAt(0))->GetActor();
+	//no physX for the red cube
+	redBlock->raiseBodyFlag(NX_BF_FROZEN);
+	redBlock->setGlobalPosition( NxVec3(0,-100,0) );
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -367,13 +393,19 @@ Flex::UpdateFrame(){
 		bool d = m_spPhysScene->GetDebugRender();
 	    m_spPhysScene->SetDebugRender(!d, m_spScene);
 	}
-	
+	if(GameStateManager::getInstance()->collision == true){
+		followCube();
+	}
 	// update the playerDisplay
 	m_playerDisplay->Update();
 	GameStateManager::getInstance()->update(m_fAccumTime);    
 
 }
-
+//---------------------------------------------------------------------------
+void
+Flex::followCube(){
+	redBlock->setGlobalPosition(collideCube->getGlobalPosition());
+}
 //---------------------------------------------------------------------------
 void 
 Flex::RenderFrame(){
@@ -387,13 +419,33 @@ void
 Flex::processContacts(NxContactPair& pair, NxU32 events){
     NxActor* a1 = pair.actors[0];
     NxActor* a2 = pair.actors[1];
+	
 	NxVec3 normalForce = pair.sumNormalForce;
 
     NILOG(NIMESSAGE_GENERAL_0, "CONTACT: a1: %s a2: %s (%f)\n", 
             a1->getName(), a2->getName(), normalForce.magnitude());
 
-	GameStateManager::getInstance()->collision = true;
+	if(GameStateManager::getInstance()->collision == false){
+		collideCube = a1;
+		GameStateManager::getInstance()->collision = true;
+	}
+	
     SetWallPhysicsEnabled(true);
+}
+//---------------------------------------------------------------------------
+void
+Flex::toggleEnableWall(bool enable){
+	NiPhysXProp* phys = m_spPhysScene->GetPropAt(GameStateManager::getInstance()->currentWall);
+	for (int i = 0; i < phys->GetDestinationsCount(); i++)
+	{
+		NiPhysXDest* src = phys->GetDestinationAt(i);
+		if (NiIsKindOf(NiPhysXTransformDest, src))
+		{
+			NiPhysXTransformDest* s = (NiPhysXTransformDest*) src;
+				if(enable)s->GetActor()->clearActorFlag(NX_AF_DISABLE_COLLISION);
+				else s->GetActor()->raiseActorFlag(NX_AF_DISABLE_COLLISION);
+			}
+	}
 }
 //---------------------------------------------------------------------------
 void
@@ -401,7 +453,10 @@ Flex::ResetWallPhysics(){
 	SetWallPhysicsEnabled(false);
 	m_spPhysScene->RestoreSnapshotState(1);
 	GameStateManager::getInstance()->collision = false;
-	GameStateManager::getInstance()->changeState(WallMoving::getInstance());
+	//hide red block
+	redBlock->setGlobalPosition( NxVec3(0,-100,0) );
+	
+	
 }
 //---------------------------------------------------------------------------
 void 
@@ -425,7 +480,7 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 		}
 		//for initialization 
 		else{
-			for(int j = 2; j<7; j++)
+			for(int j = 2; j<NUM_WALLS+2; j++)
 			{
 				NiPhysXProp* phys = m_spPhysScene->GetPropAt(j);
 				for (int i = 0; i < phys->GetDestinationsCount(); i++)
@@ -442,6 +497,7 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 							NxVec3 pos = s->GetActor()->getGlobalPosition();
 							pos[2] = -25;
 							s->GetActor()->setGlobalPosition(pos);
+							s->GetActor()->raiseActorFlag(NX_AF_DISABLE_COLLISION);
 						}
 					}
 				}
@@ -467,7 +523,7 @@ void
 Flex::InitCollisionCallbacks(){
     
 	NiPhysXProp* spPlayerProp = m_spPhysScene->GetPropAt(1);
-	for(int k = 2; k<7; k++)
+	for(int k = 2; k<NUM_WALLS+2; k++)
 	{
 		NiPhysXProp* phys = m_spPhysScene->GetPropAt(k);
 		for (int i = 0; i < phys->GetDestinationsCount(); i++)
@@ -482,7 +538,7 @@ Flex::InitCollisionCallbacks(){
 				{    
 					NxActor* playerActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(j))->GetActor();
 					m_spPhysScene->GetPhysXScene()->setActorPairFlags(
-						*playerActor, *s->GetActor(), NX_NOTIFY_ON_TOUCH | NX_NOTIFY_FORCES );
+						*playerActor, *s->GetActor(), NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_FORCES );
 
 				}
 

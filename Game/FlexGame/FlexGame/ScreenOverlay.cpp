@@ -105,9 +105,13 @@ bool ScreenOverlay::Create(Flex* app)
     // Initialize buttons
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
-    ms_pkTheScreenOverlay->m_messages.resize(2);
+    ms_pkTheScreenOverlay->m_messages.resize(6);
     ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height);
-	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided", width, height);
+	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height);	//Infinite mode - Cont
+	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height);	//3 lives mode - Surviv
+	ms_pkTheScreenOverlay->m_messages[3] = new ScreenMessage("gameOver", width, height);
+	ms_pkTheScreenOverlay->m_messages[4] = new ScreenMessage("highScores", width, height);
+	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("paused", width, height);
     
     return true;
 }
@@ -143,6 +147,7 @@ void ScreenOverlay::displayMessages(NiRenderer* pkRenderer, ActiveState state)
 	int x,y;
 	//m_app->GetMousePos(x,y);
 
+	//if state is other than wall moving draw corresponding message
 	if(state != aWallMoving){
 		m_messages[state]->draw(pkRenderer, 0, 0, true);
 	}

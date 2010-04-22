@@ -97,9 +97,9 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_Release.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops"
+			InheritedPropertySheets="..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Config_Release.vsprops;$(EMERGENT_PATH)\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Language.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_Target_StaticLinkedExecutable.vsprops;..\..\..\..\..\..\..\..\..\Emergent\Gamebryo-LightSpeed-Binary\Build\CoreRuntime\Win32\VC90\Property Sheets\GB_PhysX_StaticLink.vsprops"
 			CharacterSet="0"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -118,15 +118,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(DirectXSDK)\Include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include"
+				Optimization="0"
+				EnableIntrinsicFunctions="false"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(DirectXSDK)\Include&quot;;&quot;$(FMOD)\api\inc&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\include&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\CommonTools\Include;&quot;$(EMERGENT_PATH)\sdk\Win32\Include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Foundation\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Cooking\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\Physics\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
+				WarningLevel="4"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -139,9 +140,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib efd.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiApplication.lib NiVisualTracker.lib NiInput.lib NiDX9Renderer.lib NiD3D10Renderer.lib NiSample.lib NiFont.lib NiAnimation.lib NiParticle.lib NiUserInterface.lib NiCursor.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(DirectXSDK)\Lib\x86&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug"
+				AdditionalDependencies="AnimationManagerd.lib CommonToolsd.lib ViconDataStreamSDK_CPP.lib efd.lib PhysXLoader.lib efdPhysX.lib NiCursor.lib NiUserInterface.lib NiFont.lib NiPhysX.lib NiSystem.lib NiFloodgate.lib NiMain.lib NiMesh.lib NiAnimation.lib NiApplication.lib NiSample.lib NiVisualTracker.lib NiInput.lib fmodex_vc.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(DirectXSDK)\Lib\x86&quot;;&quot;$(FMOD)\api\lib&quot;;&quot;C:\Users\Tammy\Documents\School\cis499\Flex_code\Vicon-Datastream\lib&quot;;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Libsrc\AnimationManager\Include;C:\Users\Tammy\Documents\School\cis499\Flex_code\EMG\Lib\Debug;&quot;$(EMERGENT_PATH)\sdk\Win32\Lib\VC90\$(ConfigurationName)&quot;;&quot;$(PHYSXINSTALLPATH)\SDKs\lib\win32\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -293,6 +294,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\GameOver.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\GameStateManager.cpp"
 					>
 				</File>
@@ -306,6 +311,10 @@
 				</File>
 				<File
 					RelativePath=".\NewGameMenu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Paused.cpp"
 					>
 				</File>
 				<File
@@ -359,6 +368,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\GameOver.h"
+					>
+				</File>
+				<File
 					RelativePath=".\GameState.h"
 					>
 				</File>
@@ -376,6 +389,10 @@
 				</File>
 				<File
 					RelativePath=".\NewGameMenu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Paused.h"
 					>
 				</File>
 				<File

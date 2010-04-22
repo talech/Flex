@@ -8,9 +8,9 @@ WORLDNBT = 0
 WORLDVIEW = 0
 NORMALMAPTYPE = 0
 PARALLAXMAPCOUNT = 0
-BASEMAPCOUNT = 1
+BASEMAPCOUNT = 0
 NORMALMAPCOUNT = 0
-DARKMAPCOUNT = 1
+DARKMAPCOUNT = 0
 DETAILMAPCOUNT = 0
 BUMPMAPCOUNT = 0
 GLOSSMAPCOUNT = 0
@@ -31,7 +31,7 @@ PROJSHADOWMAPTYPES = 0
 PROJSHADOWMAPCLIPPED = 0
 PERVERTEXLIGHTING = 1
 UVSETFORMAP00 = 0
-UVSETFORMAP01 = 1
+UVSETFORMAP01 = 0
 UVSETFORMAP02 = 0
 UVSETFORMAP03 = 0
 UVSETFORMAP04 = 0
@@ -47,8 +47,8 @@ SPOTLIGHTCOUNT = 0
 DIRLIGHTCOUNT = 0
 SHADOWMAPFORLIGHT = 0
 SPECULAR = 0
-AMBDIFFEMISSIVE = 2
-LIGHTINGMODE = 1
+AMBDIFFEMISSIVE = 1
+LIGHTINGMODE = 0
 APPLYAMBIENT = 0
 BASEMAPALPHAONLY = 0
 APPLYEMISSIVE = 0
@@ -72,8 +72,6 @@ ALPHATEST = 0
 // Constant variables:
 //---------------------------------------------------------------------------
 
-sampler2D Dark;
-sampler2D Base;
 //---------------------------------------------------------------------------
 // Functions:
 //---------------------------------------------------------------------------
@@ -91,63 +89,6 @@ void SplitColorAndOpacity(float4 ColorAndOpacity,
 
     Color.rgb = ColorAndOpacity.rgb;
     Opacity = ColorAndOpacity.a;
-    
-}
-//---------------------------------------------------------------------------
-/*
-
-    This fragment is responsible for sampling a texture and returning its value
-    as a RGB value.
-    
-*/
-
-void TextureRGBSample(float2 TexCoord,
-    sampler2D Sampler,
-    bool Saturate,
-    out float3 ColorOut)
-{
-
-    ColorOut.rgb = tex2D(Sampler, TexCoord).rgb;
-    if (Saturate)
-    {
-        ColorOut.rgb = saturate(ColorOut.rgb);
-    }
-    
-}
-//---------------------------------------------------------------------------
-/*
-
-    This fragment is responsible for sampling a texture and returning its value
-    as a RGB value and an A value.
-    
-*/
-
-void TextureRGBASample(float2 TexCoord,
-    sampler2D Sampler,
-    bool Saturate,
-    out float4 ColorOut)
-{
-
-    ColorOut = tex2D(Sampler, TexCoord);
-    if (Saturate)
-    {
-        ColorOut = saturate(ColorOut);
-    }
-    
-}
-//---------------------------------------------------------------------------
-/*
-
-    This fragment is responsible for multiplying two floats. 
-    
-*/
-
-void MultiplyFloat(float V1,
-    float V2,
-    out float Output)
-{
-
-    Output = V1 * V2;
     
 }
 //---------------------------------------------------------------------------
@@ -205,8 +146,6 @@ struct Input
 {
     float4 PosProjected : POSITION0;
     float4 DiffuseAccum : TEXCOORD0;
-    float2 UVSet0 : TEXCOORD1;
-    float2 UVSet1 : TEXCOORD2;
 
 };
 
@@ -233,37 +172,16 @@ Output Main(Input In)
     SplitColorAndOpacity(In.DiffuseAccum, Color_CallOut0, Opacity_CallOut0);
 
 	// Function call #1
-    float3 ColorOut_CallOut1;
-    TextureRGBSample(In.UVSet1, Dark, bool(false), ColorOut_CallOut1);
+    float3 Output_CallOut1;
+    MultiplyFloat3(Color_CallOut0, float3(1.0f, 1.0f, 1.0f), Output_CallOut1);
 
 	// Function call #2
-    float4 ColorOut_CallOut2;
-    TextureRGBASample(In.UVSet0, Base, bool(false), ColorOut_CallOut2);
+    float3 OutputColor_CallOut2;
+    CompositeFinalRGBColor(Output_CallOut1, float3(0.0, 0.0, 0.0), 
+        OutputColor_CallOut2);
 
 	// Function call #3
-    float3 Color_CallOut3;
-    float Opacity_CallOut3;
-    SplitColorAndOpacity(ColorOut_CallOut2, Color_CallOut3, Opacity_CallOut3);
-
-	// Function call #4
-    float Output_CallOut4;
-    MultiplyFloat(Opacity_CallOut0, Opacity_CallOut3, Output_CallOut4);
-
-	// Function call #5
-    float3 Output_CallOut5;
-    MultiplyFloat3(ColorOut_CallOut1, Color_CallOut3, Output_CallOut5);
-
-	// Function call #6
-    float3 Output_CallOut6;
-    MultiplyFloat3(Color_CallOut0, Output_CallOut5, Output_CallOut6);
-
-	// Function call #7
-    float3 OutputColor_CallOut7;
-    CompositeFinalRGBColor(Output_CallOut6, float3(0.0, 0.0, 0.0), 
-        OutputColor_CallOut7);
-
-	// Function call #8
-    CompositeFinalRGBAColor(OutputColor_CallOut7, Output_CallOut4, Out.Color0);
+    CompositeFinalRGBAColor(OutputColor_CallOut2, Opacity_CallOut0, Out.Color0);
 
     return Out;
 }

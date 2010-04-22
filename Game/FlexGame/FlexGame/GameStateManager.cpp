@@ -92,3 +92,8 @@ void GameStateManager::ResetWallPhysics()
 {
 	mApp->ResetWallPhysics();
 }
+
+void GameStateManager::toggleEnableWall(bool enable)
+{
+	mApp->toggleEnableWall(enable);
+}

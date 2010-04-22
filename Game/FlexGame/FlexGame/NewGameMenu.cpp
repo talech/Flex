@@ -13,6 +13,7 @@ void NewGameMenu::enter()
 {
 	GameStateManager::getInstance()->state = aNewGame;
 	GameStateManager::getInstance()->waitingForNewGame = true;
+	GameStateManager::getInstance()->soundSystem->PlayBackground();
 }
 
 void NewGameMenu::exit()
@@ -37,13 +38,21 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 {
 	if( keyboard )
 	{
-		if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_SPACE ) ){
-			NiFixedString name = "Start";
-			GameStateManager::getInstance()->physScene->AddSnapshotState(name);
+		//if 1 -> Start continuous game mode
+		if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_1 ) ){
+			GameStateManager::getInstance()->mode = Cont;
 			GameStateManager::getInstance()->currentWall = randNum();
 			GameStateManager::getInstance()->soundSystem->PlaySong();
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		}
+		//if 2 -> Start survivor game mode
+		else if( keyboard->KeyWasPressed(NiInputKeyboard::KEY_2 ) ){
+			GameStateManager::getInstance()->mode = Surviv;
+			GameStateManager::getInstance()->currentWall = randNum();
+			GameStateManager::getInstance()->soundSystem->PlaySong();
+			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
+		}
+		//if 3 -> view high scores
 	}
 	
 }

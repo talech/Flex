@@ -45,6 +45,7 @@ public:
 
 
 	void ResetWallPhysics();
+	void toggleEnableWall(bool enable);
 
 	
 
@@ -100,6 +101,11 @@ protected:
     NiPhysXScenePtr m_spPhysScene;
     ContactReporter m_PhysContactReporter;
     float fLastSimTime;
+
+	//collision block
+	NxActor* redBlock;
+	NxActor* collideCube;
+	void followCube();
 	
     
 };

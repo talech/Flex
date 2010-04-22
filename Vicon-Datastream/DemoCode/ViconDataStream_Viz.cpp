@@ -8,7 +8,7 @@
 #include "ViconDataClient.h"
 
 // Vicon networked client
-ViconDataClient client("158.130.2.19", false);
+ViconDataClient client("158.130.2.253", false, true, true, false, false, ViconDataStreamSDK::CPP::StreamMode::ServerPush );
 
 // Geometry and whatnot
 Camera theCamera;

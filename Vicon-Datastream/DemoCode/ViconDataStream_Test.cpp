@@ -109,10 +109,10 @@ int main( int argc, char* argv[] )
   std::cout << std::endl;
 
   // Enable some different data types
-  MyClient.EnableSegmentData();
-  MyClient.EnableMarkerData();
-  MyClient.EnableUnlabeledMarkerData();
-  MyClient.EnableDeviceData();
+  MyClient.DisableSegmentData();
+  MyClient.DisableMarkerData();
+  MyClient.DisableUnlabeledMarkerData();
+  MyClient.DisableDeviceData();
 
   std::cout << "Segment Data Enabled: "          << Adapt( MyClient.IsSegmentDataEnabled().Enabled )         << std::endl;
   std::cout << "Marker Data Enabled: "           << Adapt( MyClient.IsMarkerDataEnabled().Enabled )          << std::endl;
@@ -120,9 +120,9 @@ int main( int argc, char* argv[] )
   std::cout << "Device Data Enabled: "           << Adapt( MyClient.IsDeviceDataEnabled().Enabled )          << std::endl;
 
   // Set the streaming mode
-  MyClient.SetStreamMode( ViconDataStreamSDK::CPP::StreamMode::ClientPull );
+  // MyClient.SetStreamMode( ViconDataStreamSDK::CPP::StreamMode::ClientPull );
   // MyClient.SetStreamMode( ViconDataStreamSDK::CPP::StreamMode::ClientPullPreFetch );
-  // MyClient.SetStreamMode( ViconDataStreamSDK::CPP::StreamMode::ServerPush );
+  MyClient.SetStreamMode( ViconDataStreamSDK::CPP::StreamMode::ServerPush );
 
   // Set the global up axis
   MyClient.SetAxisMapping( Direction::Forward, 

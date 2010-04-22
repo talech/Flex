@@ -38,6 +38,7 @@ protected:
 	NiPhysXProp* spWallProp_2;
 	int currentWall_2;
 	float vel;
+	float tempVel;
 
 	void ResetWall();
 };

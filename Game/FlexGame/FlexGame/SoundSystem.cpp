@@ -33,7 +33,7 @@ void SoundSystem::Initialize() {
 	result = system->createStream("../Data/Music/Flux.mp3", FMOD_LOOP_NORMAL, 0, &flux);
     ERRCHECK(result);
 
-	result = system->createStream("../Data/Music/Lex.m4a", FMOD_LOOP_NORMAL, 0, &backgroundMusic);
+	result = system->createStream("../Data/Music/Lex.mp3", FMOD_LOOP_NORMAL, 0, &backgroundMusic);
     ERRCHECK(result);
 
 }
