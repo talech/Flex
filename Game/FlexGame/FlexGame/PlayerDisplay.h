@@ -47,6 +47,7 @@ protected:
 
 	virtual void DataStream();
 	virtual void DrawMarkers();
+	virtual void ProjectShadow(int index);
 
 
 

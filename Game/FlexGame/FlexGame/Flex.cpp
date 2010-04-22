@@ -228,7 +228,7 @@ Flex::InitEnvironment(){
 
 	// Repeat the process with the player.
     kStream.RemoveAllObjects();
-    if (!kStream.Load(ConvertMediaFilename("Skeleton2.nif")))
+    if (!kStream.Load(ConvertMediaFilename("Skeleton1.nif")))
     {
         NIASSERT(0 && "Couldn't load nif file\n");
         NiMessageBox("Could not load Player.nif. Aborting\n",

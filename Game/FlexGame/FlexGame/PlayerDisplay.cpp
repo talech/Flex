@@ -187,6 +187,7 @@ void
 PlayerDisplay::DrawMarkers(){
 	std::map<std::string,vec3>::const_iterator it;
 	int index = 0;
+	int temp = 0;
 	for (it = markers.begin(); it != markers.end(); ++it)
 	{
 		std::string name = it->first;
@@ -201,6 +202,7 @@ PlayerDisplay::DrawMarkers(){
 		}
 
 	}
+	temp = index;
 
 	//make sure no unused markers are in the way 
 	while(index <= spPlayerProp->GetDestinationsCount()-1){
@@ -229,7 +231,31 @@ PlayerDisplay::DrawMarkers(){
 	NxVec3 translation((x/1000.0),(y/1000.0)+0.8,(z/1000.0)+14);
 	jointActor->setGlobalPosition(translation);
 
+	ProjectShadow(temp);
+}
 
+void
+PlayerDisplay::ProjectShadow(int index){
+	NiAVObject* shadow = scene->GetObjectByName("head_shadow");
+	NiPoint3 pos = shadow->GetWorldTranslate();
+	shadow->SetWorldTranslate(NiPoint3(pos.x-0.1,0.3,pos.z-0.18));
+	NiMatrix3 id = shadow->GetWorldRotate();
+	id.MakeIdentity();
+	shadow->SetWorldRotate(id);
+
+	if(index>11) index = 11;
+	for(int i = 3; i<index+4; i++){
+		char name[128];
+		sprintf(name, "shadow_%d", i);
+
+		NiAVObject* shadow_e = scene->GetObjectByName(name);
+		NiPoint3 pos_e = shadow_e->GetWorldTranslate();
+		shadow_e->SetWorldTranslate(NiPoint3(pos_e.x-0.1,0.3,pos_e.z-0.18));
+		NiMatrix3 id_e = shadow_e->GetWorldRotate();
+		id_e.MakeIdentity();
+		shadow_e->SetWorldRotate(id_e);
+	}
+	
 }
 
 
