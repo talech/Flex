@@ -457,7 +457,7 @@ void
 Flex::ResetWallPhysics(){
 	SetWallPhysicsEnabled(false);
 	m_spPhysScene->RestoreSnapshotState(1);
-	GameStateManager::getInstance()->collision = false;
+	
 	//hide red block
 	redBlock->setGlobalPosition( NxVec3(0,-100,0) );
 	NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());

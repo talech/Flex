@@ -24,6 +24,8 @@ void WallMoving::enter()
 	spWallProp_2 = GameStateManager::getInstance()->physScene->GetPropAt(currentWall_2);
 	
 	GameStateManager::getInstance()->toggleEnableWall(true);	
+
+	incSpeed = false;
 	
 }
 
@@ -58,7 +60,7 @@ void WallMoving::processKeyboard(Keyboard *keyboard)
 	}
 
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_DOWN)){
-		if(vel>0.1)
+		if(vel>4)
 			vel = vel - 0.1;	
 	}
 	
@@ -70,6 +72,9 @@ void WallMoving::processGamePad(GamePad *gamepad)
 
 void WallMoving::update(float delTime)
 {
+	float dT = delTime - oldTime; 
+	oldTime = delTime;
+
 	if(GameStateManager::getInstance()->collision){
 		GameStateManager::getInstance()->changeState(Collided::getInstance());
 	}
@@ -77,18 +82,18 @@ void WallMoving::update(float delTime)
 		NxActor* wallActor;
 		NxVec3 position;
 
-		if(vel < 2.1){
-			if((ScoreKeeper::getInstance()->getScore()%10) == 0)
-				vel += 0.1;	
-		}
-
-		
 		for(int i = 0; i < spWallProp->GetDestinationsCount(); i++)
 		{
 			wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
 			position = wallActor->getGlobalPosition();
-			position[2] = position[2] + (1*vel);
+			float z = position[2];
+			position[2] = position[2] + (dT*vel);
 			wallActor->setGlobalPosition(position);
+			
+			/*NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f vel: %f\n", 
+            z, position[2], dT, vel);*/
+			
+
 		}
 		if(position[2]>(0)){
 			NxActor* wallActor_2;
@@ -97,7 +102,7 @@ void WallMoving::update(float delTime)
 			{
 				wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
 				position_2 = wallActor_2->getGlobalPosition();
-				position_2[2] = position_2[2] + (1*vel);
+				position_2[2] = position_2[2] + (dT*vel);
 				wallActor_2->setGlobalPosition(position_2);
 			}
 		}
@@ -113,6 +118,16 @@ void WallMoving::update(float delTime)
 
 			spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
 			spWallProp_2 = GameStateManager::getInstance()->physScene->GetPropAt(currentWall_2);
+
+			if(vel < 0.05 && (ScoreKeeper::getInstance()->getScore()>0) ){
+				if((ScoreKeeper::getInstance()->getScore()%10) == 0 && !incSpeed){
+					vel += 0.1;	
+					incSpeed = true;
+				}
+				else if((ScoreKeeper::getInstance()->getScore()%10) != 0){	
+					incSpeed = false;
+				}
+			}
 		}
 	}
 

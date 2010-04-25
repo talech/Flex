@@ -15,8 +15,8 @@
 class ScreenMessage
 {
 public:
-    ScreenMessage() : m_x(0), m_y(0), m_name(""), m_img(0), m_isOk(false) {}
-    ScreenMessage(const char* basename, int x, int y)
+    ScreenMessage() : m_x(0), m_y(0), m_name(""), m_img(0), m_imgH(0), m_isOk(false) {}
+    ScreenMessage(const char* basename, int x, int y, overType type)
     {
         m_name = basename;
         char filename[256];
@@ -31,16 +31,39 @@ public:
         }
         m_width = pkTexture->GetWidth();
         m_height = pkTexture->GetHeight();
-		m_x = (x/2) - (m_width/2);
-		m_y = (y/2) - (m_height/2);
-        m_img = NiMeshScreenElements::Create(pkTexture);
-        m_img->AddNewScreenRect(m_y, m_x, m_width, m_height, 0, 0);
+
+		if(type == msg){
+			m_x = (x/2) - (m_width/2);
+			m_y = (y/2) - (m_height/2);
+			m_img = NiMeshScreenElements::Create(pkTexture);
+			m_img->AddNewScreenRect(m_y, m_x, m_width, m_height, 0, 0);
+		}
+		else if(type == lives){
+			
+			m_img = NiMeshScreenElements::Create(pkTexture);
+			m_img->AddNewScreenRect(y, x, m_width, m_height, 0, 0);
+
+			char filenameH[256];
+			sprintf_s(filenameH, 256,"Messages/%s_gone.tga", basename);
+	        
+			pkTexture = NiSourceTexture::Create(
+				NiApplication::ConvertMediaFilename(filenameH));
+			if (!pkTexture)
+			{
+				NiOutputDebugString("Error: ScreenOverlay::Create() Failed\n");
+				m_isOk = false;
+			}
+			m_imgH = NiMeshScreenElements::Create(pkTexture);
+			m_imgH->AddNewScreenRect(y, x, m_width, m_height, 0, 0);
+
+		}
         
     }
     
     ~ScreenMessage()
     {
         m_img = 0;
+		m_imgH = 0;
     }
     
     bool ok() { return m_isOk; }
@@ -54,11 +77,14 @@ public:
     bool draw(NiRenderer* pkRenderer, int x, int y, bool highlight) // Return true if highlighted
     {
         //if (isOn(x, y) || highlight)
-		if (highlight)
-        {
+		if (highlight){
             m_img->RenderImmediate(pkRenderer);
             return true;
         }
+		else{
+			m_imgH->RenderImmediate(pkRenderer);
+            return true;
+		}
 		return false;
     }
     
@@ -68,6 +94,7 @@ protected:
     int m_height;
     bool m_isOk;
     NiMeshScreenElementsPtr m_img;
+	NiMeshScreenElementsPtr m_imgH;
     std::string m_name;
 };
 
@@ -102,16 +129,26 @@ bool ScreenOverlay::Create(Flex* app)
         ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 32, 
         "Let's make this happen!", kColor, 0, 0);
 
-    // Initialize buttons
+    // Initialize messages
+	int margin = 5;
+    int size = 35;
+
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
-    ms_pkTheScreenOverlay->m_messages.resize(6);
-    ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height);
-	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height);	//Infinite mode - Cont
-	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height);	//3 lives mode - Surviv
-	ms_pkTheScreenOverlay->m_messages[3] = new ScreenMessage("gameOver", width, height);
-	ms_pkTheScreenOverlay->m_messages[4] = new ScreenMessage("highScores", width, height);
-	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("paused", width, height);
+    
+	ms_pkTheScreenOverlay->m_messages.resize(6);
+    ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height, msg);	//Infinite mode - Cont
+	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height, msg);	//3 lives mode - Surviv
+	ms_pkTheScreenOverlay->m_messages[3] = new ScreenMessage("gameOver", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[4] = new ScreenMessage("highScores", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("paused", width, height, msg);
+
+	ms_pkTheScreenOverlay->m_lives.resize(3);
+	ms_pkTheScreenOverlay->m_lives[0] = new ScreenMessage("dude", width-(margin*1 + size*1), margin, lives);
+	ms_pkTheScreenOverlay->m_lives[1] = new ScreenMessage("dude", width-(margin*2 + size*2), margin, lives);	
+	ms_pkTheScreenOverlay->m_lives[2] = new ScreenMessage("dude", width-(margin*3 + size*3), margin, lives);	
+	
     
     return true;
 }
@@ -150,6 +187,21 @@ void ScreenOverlay::displayMessages(NiRenderer* pkRenderer, ActiveState state)
 	//if state is other than wall moving draw corresponding message
 	if(state != aWallMoving){
 		m_messages[state]->draw(pkRenderer, 0, 0, true);
+	}
+
+	if(state != aNewGame){
+		//if survivor game mode display lives
+		if(GameStateManager::getInstance()->mode == Surviv){
+			for(int i = (m_lives.size()-1); i > -1; i--){
+				int score = ScoreKeeper::getInstance()->getLives();
+				if(i+1 < score || i+1 == score){
+					m_lives[i]->draw(pkRenderer, 0, 0, true);
+				}
+				else{
+					m_lives[i]->draw(pkRenderer, 0, 0, false);
+				}
+			}
+		}
 	}
 	
 }

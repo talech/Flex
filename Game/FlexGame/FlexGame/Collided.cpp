@@ -15,8 +15,7 @@ void Collided::enter()
 	waitTime = 0;
 	if(GameStateManager::getInstance()->mode == Surviv){
 		ScoreKeeper::getInstance()->loseLife();
-		if(ScoreKeeper::getInstance()->getLives() < 0)
-			GameStateManager::getInstance()->changeState(GameOver::getInstance());
+		
 	}
 	
 	
@@ -25,6 +24,7 @@ void Collided::enter()
 
 void Collided::exit()
 {
+	GameStateManager::getInstance()->collision = false;
 	GameStateManager::getInstance()->currentWall = randNum();
 	
 }
@@ -64,9 +64,14 @@ void Collided::update(float delTime)
 	if(waitTime == 35){
 		GameStateManager::getInstance()->toggleEnableWall(false);
 		GameStateManager::getInstance()->ResetWallPhysics();
-		GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		//NiPhysXProp* spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
 		//spWallProp->SetSnapshot(GameStateManager::getInstance()->pkSnapshot);
+	}
 
+	if(waitTime == 50){
+		if(ScoreKeeper::getInstance()->getLives() < 0)
+			GameStateManager::getInstance()->changeState(GameOver::getInstance());
+		else
+			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 	}
 }

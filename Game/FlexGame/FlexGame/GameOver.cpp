@@ -49,9 +49,5 @@ void GameOver::update(float delTime)
 		GameStateManager::getInstance()->state = aGameOver;
 	if(waitTime == 35){
 		GameStateManager::getInstance()->ResetWallPhysics();
-			
-		//NiPhysXProp* spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
-		//spWallProp->SetSnapshot(GameStateManager::getInstance()->pkSnapshot);
-
 	}
 }

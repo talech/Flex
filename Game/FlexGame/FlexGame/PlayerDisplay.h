@@ -14,6 +14,7 @@
 #include <NiPhysX.h>
 
 #include "Defines.h"
+#include "GameStateManager.h"
 
 
 typedef NiInputMouse Mouse;
@@ -63,6 +64,7 @@ private:
 	map<string,vec3> markers;
 	map<string,vec3> markersHead;
 
+	vec3 posHD;
 	bool isChild;
 	bool playing;
 	float Deg2Rad(float deg){return (deg*(3.14159265/180.0));}

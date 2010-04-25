@@ -31,14 +31,15 @@ protected:
 
 	static WallMoving mWallMoving;
 
-	WallMoving() {vel = 1;}
+	WallMoving() {vel = 2.5;}
 
 	
 	NiPhysXProp* spWallProp;
 	NiPhysXProp* spWallProp_2;
 	int currentWall_2;
 	float vel;
-	float tempVel;
+	float oldTime;
+	bool incSpeed;
 
 	void ResetWall();
 };

@@ -12,7 +12,7 @@
 class Flex;
 class ScreenMessage;
 
-
+enum overType{msg,lives};
 
 class ScreenOverlay : public NiMemObject
 {
@@ -37,7 +37,8 @@ protected:
 	Ni2DStringPtr m_Score;
 
     ActiveState m_currentState;
-    std::vector<ScreenMessage*> m_messages;    
+    vector<ScreenMessage*> m_messages;    
+	vector<ScreenMessage*> m_lives;
     Flex* m_app;
 
 private:

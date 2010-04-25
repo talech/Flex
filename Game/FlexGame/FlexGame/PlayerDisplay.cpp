@@ -35,6 +35,8 @@ PlayerDisplay::~PlayerDisplay(){
 
 void
 PlayerDisplay::Update(){
+	if (GameStateManager::getInstance()->state == aGameOver)
+		playing = false;
 	//Live Data Stream, use this if getting real-time data
 	if(client.Tick()&& playing)
 		DataStream();
@@ -213,22 +215,16 @@ PlayerDisplay::DrawMarkers(){
 	}
 
 	//draw head
-	vec3 pos = markers["t10"];
-	float x = 0; float y = 0; float z = 0;
-	/*map<string,vec3>::const_iterator itH;
-	for (itH = markersHead.begin(); itH != markersHead.end(); ++itH)
-	{
-		x += itH->second[0];
-		y += itH->second[1];
-		z += itH->second[2];
-	}*/
-	x = pos[0]; 
-	y = pos[1]; 
-	z = pos[2];
+	vec3 pos1 = markers["LSHO"];
+	vec3 pos2 = markers["RSHO"];
+	
+	posHD[0] = ((pos1[0]+pos2[0])/2.0)/1000.0; 
+	posHD[1] = ( ( (pos1[1]+pos2[1])/2.0 )/1000.0 ) + 0.3; 
+	posHD[2] = ((pos1[2]+pos2[2])/2.0)/1000.0;
 	index = spPlayerProp->GetDestinationsCount()-1;
 	NxActor* jointActor = ((NiPhysXRigidBodyDest*)spPlayerProp->GetDestinationAt(index))->GetActor();
 	//scale to my world coordinates
-	NxVec3 translation((x/1000.0),(y/1000.0)+0.8,(z/1000.0)+14);
+	NxVec3 translation(posHD[0],posHD[1]+0.5,posHD[2]+16);
 	jointActor->setGlobalPosition(translation);
 
 	ProjectShadow(temp);
@@ -238,19 +234,19 @@ void
 PlayerDisplay::ProjectShadow(int index){
 	NiAVObject* shadow = scene->GetObjectByName("head_shadow");
 	NiPoint3 pos = shadow->GetWorldTranslate();
-	shadow->SetWorldTranslate(NiPoint3(pos.x-0.1,0.3,pos.z-0.18));
+	shadow->SetWorldTranslate(NiPoint3(pos.x-0.1,0.3,(pos.z-0.18)-(pos.y*0.5)));
 	NiMatrix3 id = shadow->GetWorldRotate();
 	id.MakeIdentity();
 	shadow->SetWorldRotate(id);
 
-	if(index>11) index = 11;
+	if(index>15) index = 15;
 	for(int i = 3; i<index+4; i++){
 		char name[128];
 		sprintf(name, "shadow_%d", i);
 
 		NiAVObject* shadow_e = scene->GetObjectByName(name);
 		NiPoint3 pos_e = shadow_e->GetWorldTranslate();
-		shadow_e->SetWorldTranslate(NiPoint3(pos_e.x-0.1,0.3,pos_e.z-0.18));
+		shadow_e->SetWorldTranslate(NiPoint3(pos_e.x-0.1,0.3,(pos_e.z-0.18)-(pos_e.y*0.5)));
 		NiMatrix3 id_e = shadow_e->GetWorldRotate();
 		id_e.MakeIdentity();
 		shadow_e->SetWorldRotate(id_e);
