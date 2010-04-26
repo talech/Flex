@@ -26,6 +26,7 @@ void WallMoving::enter()
 	GameStateManager::getInstance()->toggleEnableWall(true);	
 
 	incSpeed = false;
+	oldTime = 0;
 	
 }
 
@@ -50,7 +51,10 @@ void WallMoving::processKeyboard(Keyboard *keyboard)
 {
 	//toggle between paused game
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
-		GameStateManager::getInstance()->state = aPaused;
+		if(GameStateManager::getInstance()->mode == Cont)
+			GameStateManager::getInstance()->state = aPausedCont;
+		else
+			GameStateManager::getInstance()->state = aPausedSurviv;
 		GameStateManager::getInstance()->changeState(Paused::getInstance());
 		
 	}
@@ -72,6 +76,9 @@ void WallMoving::processGamePad(GamePad *gamepad)
 
 void WallMoving::update(float delTime)
 {
+	//if I just changed state to WallMoving, don't move the wall on the first update
+	if(oldTime == 0) oldTime = delTime;
+
 	float dT = delTime - oldTime; 
 	oldTime = delTime;
 
@@ -90,8 +97,8 @@ void WallMoving::update(float delTime)
 			position[2] = position[2] + (dT*vel);
 			wallActor->setGlobalPosition(position);
 			
-			/*NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f vel: %f\n", 
-            z, position[2], dT, vel);*/
+			NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
+            z, position[2], dT);
 			
 
 		}
@@ -102,8 +109,12 @@ void WallMoving::update(float delTime)
 			{
 				wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
 				position_2 = wallActor_2->getGlobalPosition();
+				float z = position_2[2];
 				position_2[2] = position_2[2] + (dT*vel);
 				wallActor_2->setGlobalPosition(position_2);
+
+				NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
+				z, position_2[2], dT);
 			}
 		}
 		if(position[2]>(20)){

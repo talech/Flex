@@ -31,10 +31,12 @@ public:
 protected:
 
 	void displayMessages(NiRenderer* pkRenderer, ActiveState state); 
-    void displayScore(NiRenderer* pkRenderer, int score); 
+    void displayScore(NiRenderer* pkRenderer, int score, ActiveState state); 
+	void displayHighScore(NiRenderer* pkRenderer);
 
     NiFontPtr m_spHUDFont;
 	Ni2DStringPtr m_Score;
+	Ni2DStringPtr m_ScoreMsg;
 
     ActiveState m_currentState;
     vector<ScreenMessage*> m_messages;    

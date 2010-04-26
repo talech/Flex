@@ -7,6 +7,12 @@ ScoreKeeper::~ScoreKeeper(){
 	lives = 0;
 }
 
+void 
+ScoreKeeper::resetGame(){
+	score = 0;
+	lives = 3;
+}
+
 void
 ScoreKeeper::scoreWall(){
 	score += 1;
@@ -49,6 +55,7 @@ ScoreKeeper::readScores(){
 				string::size_type position = line.find("-.");
 				string name = line.substr(0,position);
 				string number = line.substr(position+2,line.size());
+				name.append("\0");
 				int value = atoi(number.c_str());
 
 				if(mode == 1){

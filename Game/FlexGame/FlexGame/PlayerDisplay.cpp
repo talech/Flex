@@ -35,14 +35,16 @@ PlayerDisplay::~PlayerDisplay(){
 
 void
 PlayerDisplay::Update(){
-	if (GameStateManager::getInstance()->state == aGameOver)
+	ActiveState state = GameStateManager::getInstance()->state;
+	if (state == aWallMoving)
+		playing = true;
+	else
 		playing = false;
 	//Live Data Stream, use this if getting real-time data
-	if(client.Tick()&& playing)
+	if(client.Tick()&& playing){
 		DataStream();
-
-	if(playing)
 		DrawMarkers();
+	}
 	
 
 	//Update frame to next frame if playing
@@ -136,12 +138,6 @@ PlayerDisplay::DrawActorRec(Player *player, Joint *pJoint){
 
 void 
 PlayerDisplay::processKeyboard(Keyboard* keyboard){
-	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_1)){
-		playing = true;
-	}
-	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_2)){
-		playing = true;
-	}
 	/*
 	else if (keyboard->KeyIsDown(NiInputKeyboard::KEY_Q)){
 		m_Player->SetMotion(motions[0]);

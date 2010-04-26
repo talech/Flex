@@ -429,10 +429,10 @@ Flex::processContacts(NxContactPair& pair, NxU32 events){
 	if(GameStateManager::getInstance()->collision == false){
 		collideCube = a1;
 		GameStateManager::getInstance()->collision = true;
-		NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());
+		/*NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());
 		NiMaterialProperty* p = (NiMaterialProperty*)cube->GetProperty(NiMaterialProperty::GetType());
 		p->SetDiffuseColor(NiColor(1.0, 0.0, 0.0));
-		cube->UpdateProperties();
+		cube->UpdateProperties();*/
 	}
 	
     SetWallPhysicsEnabled(true);
@@ -459,11 +459,11 @@ Flex::ResetWallPhysics(){
 	m_spPhysScene->RestoreSnapshotState(1);
 	
 	//hide red block
-	redBlock->setGlobalPosition( NxVec3(0,-100,0) );
+	/*redBlock->setGlobalPosition( NxVec3(0,-100,0) );
 	NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());
 	NiMaterialProperty* p = (NiMaterialProperty*)cube->GetProperty(NiMaterialProperty::GetType());
     p->SetDiffuseColor(NiColor(0.0, 0.0, 1.0));
-	cube->UpdateProperties();
+	cube->UpdateProperties();*/
 	
 	
 }

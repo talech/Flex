@@ -15,7 +15,7 @@ static int NUM_WALLS = 10;
 static int randNum(){ return (rand() % NUM_WALLS + 2); }
 
 
-enum ActiveState{aNewGame,aCollidedCont,aCollidedSurviv,aGameOver,aHighScores,aPaused,aWallMoving};
+enum ActiveState{aNewGame,aCollidedCont,aCollidedSurviv,aGameOver,aHighScores,aPausedCont,aPausedSurviv,aWallMoving};
 enum GameMode{Cont,Surviv};
 
 

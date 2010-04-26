@@ -22,6 +22,7 @@ public:
 
 	~ScoreKeeper();
 
+	void resetGame();
 	void scoreWall();
 	void loseLife();
 

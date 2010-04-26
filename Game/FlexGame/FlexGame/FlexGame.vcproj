@@ -302,6 +302,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\HighScores.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\InitializeState.cpp"
 					>
 				</File>
@@ -377,6 +381,10 @@
 				</File>
 				<File
 					RelativePath=".\GameStateManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HighScores.h"
 					>
 				</File>
 				<File

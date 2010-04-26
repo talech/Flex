@@ -1,5 +1,5 @@
 #include "GameOver.h"
-#include "WallMoving.h"
+#include "NewGameMenu.h"
 #include "ScoreKeeper.h"
 #include <math.h>
 
@@ -36,6 +36,12 @@ void GameOver::processMouse(Mouse *mouse)
 
 void GameOver::processKeyboard(Keyboard *keyboard)
 {
+	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
+		GameStateManager::getInstance()->state = aNewGame;
+		ScoreKeeper::getInstance()->resetGame();
+		GameStateManager::getInstance()->changeState(NewGameMenu::getInstance());
+		
+	}
 }
 
 void GameOver::processGamePad(GamePad *gamepad)

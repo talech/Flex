@@ -129,6 +129,10 @@ bool ScreenOverlay::Create(Flex* app)
         ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 32, 
         "Let's make this happen!", kColor, 0, 0);
 
+	ms_pkTheScreenOverlay->m_ScoreMsg = NiNew Ni2DString(
+        ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 38, 
+        "Let's make this happen!", kColor, 0, 0);
+
     // Initialize messages
 	int margin = 5;
     int size = 35;
@@ -136,13 +140,14 @@ bool ScreenOverlay::Create(Flex* app)
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
     
-	ms_pkTheScreenOverlay->m_messages.resize(6);
+	ms_pkTheScreenOverlay->m_messages.resize(7);
     ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height, msg);	//Infinite mode - Cont
 	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height, msg);	//3 lives mode - Surviv
 	ms_pkTheScreenOverlay->m_messages[3] = new ScreenMessage("gameOver", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[4] = new ScreenMessage("highScores", width, height, msg);
-	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("paused", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("pausedCont", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[6] = new ScreenMessage("pausedSurviv", width, height, msg);
 
 	ms_pkTheScreenOverlay->m_lives.resize(3);
 	ms_pkTheScreenOverlay->m_lives[0] = new ScreenMessage("dude", width-(margin*1 + size*1), margin, lives);
@@ -174,7 +179,7 @@ void ScreenOverlay::Draw()
     pkRenderer->SetScreenSpaceCameraData();
    
 	displayMessages(pkRenderer, GameStateManager::getInstance()->state);
-	displayScore(pkRenderer,ScoreKeeper::getInstance()->getScore());
+	displayScore(pkRenderer,ScoreKeeper::getInstance()->getScore(), GameStateManager::getInstance()->state);
 }
 
 
@@ -206,18 +211,63 @@ void ScreenOverlay::displayMessages(NiRenderer* pkRenderer, ActiveState state)
 	
 }
 
-void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score)
+void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score, ActiveState state)
 {
-    m_Score->sprintf("Score: %d", score);
-            
-    float width, height;
-    m_spHUDFont->GetTextExtent(m_Score->GetText(), width, height);
+	if(state != aNewGame && state != aGameOver && state != aHighScores){
+		m_Score->sprintf("Score: %d", score);
+	            
+		float width, height;
+		m_spHUDFont->GetTextExtent(m_Score->GetText(), width, height);
 
-    unsigned int uiX = 5;
-    unsigned int uiY = m_app->DEFAULT_HEIGHT - (int) height;
-               
-    m_Score->SetPosition(5, 5);
-    m_Score->Draw(pkRenderer);
+		unsigned int uiX = 5;
+		unsigned int uiY = m_app->DEFAULT_HEIGHT - (int) height;
+	               
+		m_Score->SetPosition(5, 5);
+		m_Score->Draw(pkRenderer);
+	}
+	else if(state == aGameOver){
+		
+		m_ScoreMsg->sprintf("Final Score: %d", score);
+	            
+		float width, height;
+		m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
+
+		unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+		unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	               
+		m_ScoreMsg->SetPosition(uiX, uiY);
+		m_ScoreMsg->Draw(pkRenderer);
+	}
+
+	else if(state == aHighScores){
+		displayHighScore(pkRenderer);
+	}
+}
+
+void
+ScreenOverlay::displayHighScore(NiRenderer *pkRenderer){
+	
+	m_ScoreMsg->sprintf("High Scores\n\n Continuous Mode: \n %s %d \n %s %d \n %s %d \n %s %d \n %s %d \n\n Survivor Mode: \n %s %d \n %s %d \n %s %d \n %s %d \n %s %d",
+		ScoreKeeper::getInstance()->highCont[0].first.c_str(),ScoreKeeper::getInstance()->highCont[0].second,
+		ScoreKeeper::getInstance()->highCont[1].first.c_str(),ScoreKeeper::getInstance()->highCont[1].second,
+		ScoreKeeper::getInstance()->highCont[2].first.c_str(),ScoreKeeper::getInstance()->highCont[2].second,
+		ScoreKeeper::getInstance()->highCont[3].first.c_str(),ScoreKeeper::getInstance()->highCont[3].second,
+		ScoreKeeper::getInstance()->highCont[4].first.c_str(),ScoreKeeper::getInstance()->highCont[4].second,
+		ScoreKeeper::getInstance()->highSurviv[0].first.c_str(),ScoreKeeper::getInstance()->highSurviv[0].second,
+		ScoreKeeper::getInstance()->highSurviv[1].first.c_str(),ScoreKeeper::getInstance()->highSurviv[1].second,
+		ScoreKeeper::getInstance()->highSurviv[2].first.c_str(),ScoreKeeper::getInstance()->highSurviv[2].second,
+		ScoreKeeper::getInstance()->highSurviv[3].first.c_str(),ScoreKeeper::getInstance()->highSurviv[3].second,
+		ScoreKeeper::getInstance()->highSurviv[4].first.c_str(),ScoreKeeper::getInstance()->highSurviv[4].second
+		);
+	            
+	float width, height;
+	m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
+
+	unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+	unsigned int uiY = (m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	               
+	m_ScoreMsg->SetPosition(uiX, uiY);
+	m_ScoreMsg->Draw(pkRenderer);
 }
 
 
