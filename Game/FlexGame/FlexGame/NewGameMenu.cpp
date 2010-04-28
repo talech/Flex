@@ -47,6 +47,7 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 			GameStateManager::getInstance()->mode = Cont;
 			GameStateManager::getInstance()->currentWall = randNum();
 			GameStateManager::getInstance()->soundSystem->PlaySong();
+			ScoreKeeper::getInstance()->startGame(updateTime);
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		}
 		//if 2 -> Start survivor game mode
@@ -54,6 +55,7 @@ void NewGameMenu::processKeyboard(Keyboard *keyboard)
 			GameStateManager::getInstance()->mode = Surviv;
 			GameStateManager::getInstance()->currentWall = randNum();
 			GameStateManager::getInstance()->soundSystem->PlaySong();
+			ScoreKeeper::getInstance()->startGame(updateTime);
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 		}
 		//if 3 -> view high scores
@@ -75,5 +77,6 @@ void NewGameMenu::setUIGroup( NiUIGroup* group )
 
 void NewGameMenu::update(float delTime)
 {
+	updateTime = delTime;
 	
 }

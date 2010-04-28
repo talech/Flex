@@ -71,8 +71,10 @@ void Collided::update(float delTime)
 	}
 
 	if(waitTime == 50){
-		if(ScoreKeeper::getInstance()->getLives() < 0)
+		if(ScoreKeeper::getInstance()->getLives() < 0){
+			ScoreKeeper::getInstance()->endGame(delTime);
 			GameStateManager::getInstance()->changeState(GameOver::getInstance());
+		}
 		else
 			GameStateManager::getInstance()->changeState(WallMoving::getInstance());
 	}

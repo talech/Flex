@@ -28,10 +28,12 @@ public:
 	static Paused* getInstance() { return &mPaused; }
 
 protected:
-
+	float updateTime;
+	
 	static Paused mPaused;
 
 	Paused() {;}
+
 
 	
 	

@@ -28,6 +28,8 @@ public:
 
 protected:
 
+	float updateTime;
+
 	NiUIGroup* mMenuGroup;
 
 	static NewGameMenu mNewGameMenu;

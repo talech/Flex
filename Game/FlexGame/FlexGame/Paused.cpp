@@ -44,6 +44,7 @@ void Paused::processKeyboard(Keyboard *keyboard)
 		if(GameStateManager::getInstance()->mode == Cont){
 			GameStateManager::getInstance()->state = aGameOver;
 			GameStateManager::getInstance()->ResetWallPhysics();
+			ScoreKeeper::getInstance()->endGame(updateTime);
 			GameStateManager::getInstance()->changeState(GameOver::getInstance());
 		}
 		else{
@@ -62,7 +63,7 @@ void Paused::processGamePad(GamePad *gamepad)
 
 void Paused::update(float delTime)
 {
-	
+	updateTime = delTime;	
 
 		
 }

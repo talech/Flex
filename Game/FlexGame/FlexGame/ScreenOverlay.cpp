@@ -227,8 +227,9 @@ void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score, ActiveState 
 		m_Score->Draw(pkRenderer);
 	}
 	else if(state == aGameOver){
-		
-		m_ScoreMsg->sprintf("Final Score: %d", score);
+		int time = (int)ScoreKeeper::getInstance()->getTime();
+		int final = time*score;
+		m_ScoreMsg->sprintf("Score: %d \nTime: %d secs \nTotal Score: %d", score,time,final);
 	            
 		float width, height;
 		m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);

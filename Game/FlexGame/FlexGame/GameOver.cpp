@@ -38,8 +38,14 @@ void GameOver::processKeyboard(Keyboard *keyboard)
 {
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
 		GameStateManager::getInstance()->state = aNewGame;
-		ScoreKeeper::getInstance()->resetGame();
-		GameStateManager::getInstance()->changeState(NewGameMenu::getInstance());
+		
+		if(ScoreKeeper::getInstance()->isHigh()){
+			int ohyeah = 0;
+		}
+		else{
+			ScoreKeeper::getInstance()->resetGame();
+			GameStateManager::getInstance()->changeState(NewGameMenu::getInstance());
+		}
 		
 	}
 }

@@ -28,11 +28,14 @@ public:
 	void scoreFirstHit();
 	void scoreHit();
 	void smashToggle(bool on);
+	void startGame(float dtime);
+	void endGame(float dtime);
 
 	int getWalls();
 	int getScore();
 	int getLives();
 	int getSmashScore();
+	float getTime();
 
 	bool isHigh();
 
@@ -51,13 +54,16 @@ private:
 	int score;
 	int lives;
 	int smash;
+	float time;
+	float initTime;
+
 
 	static ScoreKeeper mKeeper;
 
 	void readScores();
 	void writeScores();
 
-	ScoreKeeper() {score = 0; lives = 3; walls = 0; smash = 0; readScores();}
+	ScoreKeeper() {score = 0; lives = 3; walls = 0; smash = 0; time = 0; initTime = 0; readScores();}
 
 	
 };

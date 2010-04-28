@@ -1,4 +1,6 @@
 #include "ScoreKeeper.h"
+#include "GameStateManager.h"
+#include "defines.h"
 
 ScoreKeeper ScoreKeeper::mKeeper;
 
@@ -7,6 +9,8 @@ ScoreKeeper::~ScoreKeeper(){
 	score = 0;
 	lives = 0;
 	smash = 0;
+	time = 0;
+	initTime = 0;
 }
 
 void 
@@ -15,6 +19,7 @@ ScoreKeeper::resetGame(){
 	score = 0;
 	lives = 3;
 	smash = 0;
+	time = 0;
 }
 
 void
@@ -63,6 +68,36 @@ ScoreKeeper::getLives(){
 int
 ScoreKeeper::getSmashScore(){
 	return smash;
+}
+
+float 
+ScoreKeeper::getTime(){
+	return time;
+}
+
+void
+ScoreKeeper::startGame(float dtime){
+	initTime = dtime;
+}
+
+void
+ScoreKeeper::endGame(float dtime){
+	time = dtime - initTime;
+}
+
+bool 
+ScoreKeeper::isHigh(){
+	int myScore = score+walls;
+	if(GameStateManager::getInstance()->mode == Cont){
+		myScore = myScore*time;
+		if(myScore > highCont[4].second)
+			return true;
+	}
+	else{
+		if(myScore > highSurviv[4].second)
+			return true;
+	}
+	return false;
 }
 
 void 
