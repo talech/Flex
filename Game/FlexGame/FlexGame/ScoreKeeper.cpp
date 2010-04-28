@@ -104,15 +104,20 @@ ScoreKeeper::isHigh(){
 void
 ScoreKeeper::insertName(){
 	string name = (string)GotHigh::getInstance()->getName();
+	/*NILOG(NIMESSAGE_GENERAL_0, "name: %s, size: %d", 
+			name.c_str(), name.size());*/
 	int myScore = score+walls;
 	if(GameStateManager::getInstance()->mode == Cont){
 		myScore = myScore*time;
+
 		for(int i = 4; i>-1; i--){
 			if(myScore > highCont[i].second){
 				if(i<4){
-					highCont[i+1] = highCont[i];
+					highCont[i+1] = make_pair(highCont[i].first,highCont[i].second);
 				}
 				highCont[i] = make_pair(name,myScore);
+				/*NILOG(NIMESSAGE_GENERAL_0, "pair: %s, score: %d", 
+					highCont[i].first.c_str(), highCont[i].second);*/
 			}
 		}
 	}
@@ -120,13 +125,12 @@ ScoreKeeper::insertName(){
 		for(int i = 4; i>-1; i--){
 			if(myScore > highSurviv[i].second){
 				if(i<4){
-					highSurviv[i+1] = highSurviv[i];
+					highSurviv[i+1] = make_pair(highSurviv[i].first,highSurviv[i].second);
 				}
 				highSurviv[i] = make_pair(name,myScore);
 			}
 		}
 	}
-
 	writeScores();
 }
 
@@ -156,11 +160,11 @@ ScoreKeeper::readScores(){
 				int value = atoi(number.c_str());
 
 				if(mode == 1){
-					highCont[index] = make_pair(name,value);
+					highCont[index] = make_pair(name.c_str(),value);
 					index++;
 				}
 				else if(mode == 2){
-					highSurviv[index] = make_pair(name,value);
+					highSurviv[index] = make_pair(name.c_str(),value);
 					index++;
 				}
 			}
@@ -173,9 +177,10 @@ ScoreKeeper::readScores(){
 void
 ScoreKeeper::writeScores(){
 	ofstream myfile;
-	myfile.open ("HighScores2.txt");
-	char* text;
-	sprintf(text,"*Cont\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n*Surviv\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d",
+	
+	static char text[100];
+
+	sprintf(text,"*Cont\n%s-.%d \n%s-.%d \n%s-.%d \n%s-.%d \n%s-.%d \n*Surviv\n%s-.%d \n%s-.%d \n%s-.%d \n%s-.%d \n%s-.%d  \0",
 		highCont[0].first.c_str(),highCont[0].second,
 		highCont[1].first.c_str(),highCont[1].second,
 		highCont[2].first.c_str(),highCont[2].second,
@@ -186,6 +191,10 @@ ScoreKeeper::writeScores(){
 		highSurviv[2].first.c_str(),highSurviv[2].second,
 		highSurviv[3].first.c_str(),highSurviv[3].second,
 		highSurviv[4].first.c_str(),highSurviv[4].second);
+	/*NILOG(NIMESSAGE_GENERAL_0, "text: %s", 
+			text);*/
+
+	myfile.open ("HighScores.txt");
 	myfile << text;
 	myfile.close();
 }

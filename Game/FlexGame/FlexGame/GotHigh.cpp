@@ -20,7 +20,6 @@ void GotHigh::enter()
 
 void GotHigh::exit()
 {
-	
 }
 
 void GotHigh::pause()
@@ -44,7 +43,8 @@ void GotHigh::processKeyboard(Keyboard *keyboard)
 			name.replace(i,1,"_");
 		}
 		name.append("\0");
-		GameStateManager::getInstance()->state = aNewGame;
+		/*NILOG(NIMESSAGE_GENERAL_0, "name: %s, size: %d", 
+			name.c_str(), name.size());*/
 		ScoreKeeper::getInstance()->insertName();
 		ScoreKeeper::getInstance()->resetGame();
 		GameStateManager::getInstance()->changeState(NewGameMenu::getInstance());

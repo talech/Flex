@@ -174,8 +174,10 @@ PlayerDisplay::DataStream(){
 			client.GetMarkerData(subjectName, marker, markerName, markerParentName, position);
 			if(markerName == "LFHD"||markerName == "RFHD"||markerName == "LBHD"||markerName == "RBHD")
 				markersHead[markerName] = position;
-			else
-				markers[markerName] = position;
+			else{
+				if(position[0] != 0 && position[1] != 0 && position[2] != 0)
+					markers[markerName] = position;
+			}
 			
 		}
 	}
@@ -211,8 +213,8 @@ PlayerDisplay::DrawMarkers(){
 	}
 
 	//draw head
-	vec3 pos1 = markers["LSHO"];
-	vec3 pos2 = markers["RSHO"];
+	vec3 pos1 = markers["C7"];
+	vec3 pos2 = markers["STRN"];
 	
 	posHD[0] = ((pos1[0]+pos2[0])/2.0)/1000.0; 
 	posHD[1] = ( ( (pos1[1]+pos2[1])/2.0 )/1000.0 ) + 0.3; 
