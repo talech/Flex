@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "WallMoving.h"
 #include "Collided.h"
 #include "Paused.h"
@@ -159,12 +164,12 @@ WallMoving::ScoreWall(){
 
 
 	//increase speed 
-	if(vel < 4.0  && (ScoreKeeper::getInstance()->getWalls()>0) ){
-		if((ScoreKeeper::getInstance()->getScore()%10) == 0 && !incSpeed){
+	if(vel < 7.0  && (ScoreKeeper::getInstance()->getWalls()>0) ){
+		if((ScoreKeeper::getInstance()->getScore()%4) == 0 && !incSpeed){
 			vel += 0.1;	
 			incSpeed = true;
 		}
-		else if((ScoreKeeper::getInstance()->getWalls()%10) != 0){	
+		else if((ScoreKeeper::getInstance()->getWalls()%4) != 0){	
 			incSpeed = false;
 		}
 	}

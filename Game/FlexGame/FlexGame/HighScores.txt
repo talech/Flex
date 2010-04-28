@@ -5,8 +5,8 @@ JOE__-.175
 TAMMY-.59 
 TAMMY-.10 
 *Surviv
+ALINE-.25 
 TAMMY-.10 
 TAMMY-.4 
 TAMMY-.3 
-TAMMY-.2 
-TAMMY-.0  
+TAMMY-.2  

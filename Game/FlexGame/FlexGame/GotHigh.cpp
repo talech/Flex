@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "GotHigh.h"
 #include "NewGameMenu.h"
 #include "ScoreKeeper.h"

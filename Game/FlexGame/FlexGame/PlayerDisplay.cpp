@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "PlayerDisplay.h"
 #include <CommonTypes.h>
 
@@ -232,7 +237,7 @@ void
 PlayerDisplay::ProjectShadow(int index){
 	NiAVObject* shadow = scene->GetObjectByName("head_shadow");
 	NiPoint3 pos = shadow->GetWorldTranslate();
-	shadow->SetWorldTranslate(NiPoint3(pos.x-0.1,0.3,(pos.z-0.18)-(pos.y*0.5)));
+	shadow->SetWorldTranslate(NiPoint3(pos.x-0.1,0.3,(pos.z-0.18)-(pos.y)));
 	NiMatrix3 id = shadow->GetWorldRotate();
 	id.MakeIdentity();
 	shadow->SetWorldRotate(id);
@@ -244,7 +249,7 @@ PlayerDisplay::ProjectShadow(int index){
 
 		NiAVObject* shadow_e = scene->GetObjectByName(name);
 		NiPoint3 pos_e = shadow_e->GetWorldTranslate();
-		shadow_e->SetWorldTranslate(NiPoint3(pos_e.x-0.1,0.3,(pos_e.z-0.18)-(pos_e.y*0.5)));
+		shadow_e->SetWorldTranslate(NiPoint3(pos_e.x-0.1,0.3,(pos_e.z-0.18)-(pos_e.y)));
 		NiMatrix3 id_e = shadow_e->GetWorldRotate();
 		id_e.MakeIdentity();
 		shadow_e->SetWorldRotate(id_e);

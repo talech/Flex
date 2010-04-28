@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #ifndef InitializeState_H
 #define InitializeState_H
 

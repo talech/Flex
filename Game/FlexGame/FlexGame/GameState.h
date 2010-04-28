@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #ifndef GameState_H
 #define GameState_H
 

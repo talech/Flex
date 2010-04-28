@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "CameraController.h"
 #include "NiApplication.h"
 #include <NiAVObject.h>

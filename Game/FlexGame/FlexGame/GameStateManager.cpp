@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "GameStateManager.h"
 #include "GameState.h"
 #include "Flex.h"

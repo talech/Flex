@@ -1,3 +1,8 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #include "NewGameMenu.h"
 #include "WallMoving.h"
 #include "HighScores.h"

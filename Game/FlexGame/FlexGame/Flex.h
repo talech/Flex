@@ -1,6 +1,11 @@
 #ifndef FLEX_H
 #define FLEX_H
 
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #define GAMEBRYO
 
 #include <efdPhysX/PhysXSDKManager.h>

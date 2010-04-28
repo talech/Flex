@@ -1,12 +1,15 @@
+/****************************************************
+Flex - Senior Project
+Copyright (C) 2010 Tamara Levy
+*****************************************************/
+
 #ifndef WallMoving_H
 #define WallMoving_H
 
 #include "GameState.h"
 #include "ScoreKeeper.h"
 
-// The State that should sit on the bottom of the stack.
-// When the running state is popped, the application terminates,
-// ensuring the stack is never empty.
+
 class WallMoving : public GameState
 {
 public:
@@ -31,7 +34,7 @@ protected:
 
 	static WallMoving mWallMoving;
 
-	WallMoving() {vel = 2.5;}
+	WallMoving() {vel = 3.5;}
 
 	
 	NiPhysXProp* spWallProp;
