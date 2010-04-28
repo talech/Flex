@@ -8,6 +8,7 @@
 
 #include "ScoreKeeper.h"
 #include "GameStateManager.h"
+#include "GotHigh.h"
 
 class Flex;
 class ScreenMessage;
@@ -33,10 +34,14 @@ protected:
 	void displayMessages(NiRenderer* pkRenderer, ActiveState state); 
     void displayScore(NiRenderer* pkRenderer, int score, ActiveState state); 
 	void displayHighScore(NiRenderer* pkRenderer);
+	void displayGameOver(NiRenderer* pkRenderer, int score);
+	void displaySmash(NiRenderer* pkRenderer, int score);
+	void displayGotHigh(NiRenderer* pkRenderer, int score);
 
     NiFontPtr m_spHUDFont;
 	Ni2DStringPtr m_Score;
 	Ni2DStringPtr m_ScoreMsg;
+	Ni2DStringPtr m_name;
 
     ActiveState m_currentState;
     vector<ScreenMessage*> m_messages;    

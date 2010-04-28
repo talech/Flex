@@ -70,7 +70,7 @@ void Collided::update(float delTime)
 		//spWallProp->SetSnapshot(GameStateManager::getInstance()->pkSnapshot);
 	}
 
-	if(waitTime == 50){
+	if(waitTime == 60){
 		if(ScoreKeeper::getInstance()->getLives() < 0){
 			ScoreKeeper::getInstance()->endGame(delTime);
 			GameStateManager::getInstance()->changeState(GameOver::getInstance());

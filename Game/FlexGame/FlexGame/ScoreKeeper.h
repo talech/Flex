@@ -39,6 +39,8 @@ public:
 
 	bool isHigh();
 
+	void insertName();
+
 	void update( float delTime );
 
 	static ScoreKeeper* getInstance() { return &mKeeper; }

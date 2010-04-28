@@ -443,7 +443,7 @@ Flex::processContacts(NxContactPair& pair, NxU32 events){
 	else{
 		if(GameStateManager::getInstance()->smashing == true){
 			if(strcmp(a1->getName(),"smash1") == 0 || strcmp(a2->getName(),"smash2") == 0)
-				ScoreKeeper::getInstance()->scoreFirstHit();
+				ScoreKeeper::getInstance()->scoreHit();
 		}
 	}
 	
@@ -470,7 +470,7 @@ Flex::ResetWallPhysics(){
 	SetWallPhysicsEnabled(false);
 	m_spPhysScene->RestoreSnapshotState(1);
 
-	ScoreKeeper::getInstance()->smashToggle(false);		
+		
 }
 //---------------------------------------------------------------------------
 void 

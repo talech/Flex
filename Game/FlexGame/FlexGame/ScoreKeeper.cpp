@@ -1,6 +1,7 @@
 #include "ScoreKeeper.h"
 #include "GameStateManager.h"
 #include "defines.h"
+#include "GotHigh.h"
 
 ScoreKeeper ScoreKeeper::mKeeper;
 
@@ -100,6 +101,35 @@ ScoreKeeper::isHigh(){
 	return false;
 }
 
+void
+ScoreKeeper::insertName(){
+	string name = (string)GotHigh::getInstance()->getName();
+	int myScore = score+walls;
+	if(GameStateManager::getInstance()->mode == Cont){
+		myScore = myScore*time;
+		for(int i = 4; i>-1; i--){
+			if(myScore > highCont[i].second){
+				if(i<4){
+					highCont[i+1] = highCont[i];
+				}
+				highCont[i] = make_pair(name,myScore);
+			}
+		}
+	}
+	else{
+		for(int i = 4; i>-1; i--){
+			if(myScore > highSurviv[i].second){
+				if(i<4){
+					highSurviv[i+1] = highSurviv[i];
+				}
+				highSurviv[i] = make_pair(name,myScore);
+			}
+		}
+	}
+
+	writeScores();
+}
+
 void 
 ScoreKeeper::readScores(){
 	string line;
@@ -139,4 +169,25 @@ ScoreKeeper::readScores(){
 	}
 	else cout << "Unable to open file"; 
 }
+
+void
+ScoreKeeper::writeScores(){
+	ofstream myfile;
+	myfile.open ("HighScores2.txt");
+	char* text;
+	sprintf(text,"*Cont\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n*Surviv\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d\n%s-.%d",
+		highCont[0].first.c_str(),highCont[0].second,
+		highCont[1].first.c_str(),highCont[1].second,
+		highCont[2].first.c_str(),highCont[2].second,
+		highCont[3].first.c_str(),highCont[3].second,
+		highCont[4].first.c_str(),highCont[4].second,
+		highSurviv[0].first.c_str(),highSurviv[0].second,
+		highSurviv[1].first.c_str(),highSurviv[1].second,
+		highSurviv[2].first.c_str(),highSurviv[2].second,
+		highSurviv[3].first.c_str(),highSurviv[3].second,
+		highSurviv[4].first.c_str(),highSurviv[4].second);
+	myfile << text;
+	myfile.close();
+}
+
 

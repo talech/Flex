@@ -1,6 +1,7 @@
 #include "GameOver.h"
 #include "NewGameMenu.h"
 #include "ScoreKeeper.h"
+#include "GotHigh.h"
 #include <math.h>
 
 GameOver GameOver::mGameOver;
@@ -37,12 +38,11 @@ void GameOver::processMouse(Mouse *mouse)
 void GameOver::processKeyboard(Keyboard *keyboard)
 {
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
-		GameStateManager::getInstance()->state = aNewGame;
-		
 		if(ScoreKeeper::getInstance()->isHigh()){
-			int ohyeah = 0;
+			GameStateManager::getInstance()->changeState(GotHigh::getInstance());
 		}
 		else{
+			GameStateManager::getInstance()->state = aNewGame;
 			ScoreKeeper::getInstance()->resetGame();
 			GameStateManager::getInstance()->changeState(NewGameMenu::getInstance());
 		}

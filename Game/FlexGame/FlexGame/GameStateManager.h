@@ -65,6 +65,8 @@ public:
 	ActiveState state;
 	GameMode mode;
 
+	char* playerName;
+
 private:
 
 	bool mRunning;

@@ -15,6 +15,7 @@ void WallMoving::enter()
 	GameStateManager::getInstance()->physScene->AddSnapshotState(name);
 
 	GameStateManager::getInstance()->state = aWallMoving;
+	ScoreKeeper::getInstance()->smashToggle(false);	
 	spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
 	//GameStateManager::getInstance()->pkSnapshot = spWallProp->GetSnapshot();
 
@@ -54,6 +55,7 @@ void WallMoving::processMouse(Mouse *mouse)
 
 void WallMoving::processKeyboard(Keyboard *keyboard)
 {
+	
 	//toggle between paused game
 	if (keyboard->KeyIsDown(NiInputKeyboard::KEY_SPACE)){
 		if(GameStateManager::getInstance()->mode == Cont)

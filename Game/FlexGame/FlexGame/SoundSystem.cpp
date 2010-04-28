@@ -39,7 +39,7 @@ void SoundSystem::Initialize() {
 }
 
 void SoundSystem::PlayBackground() {
-	result = system->playSound(FMOD_CHANNEL_FREE, backgroundMusic, false, 0);
+	result = system->playSound(FMOD_CHANNEL_FREE, backgroundMusic, true, 0); //change to false
     ERRCHECK(result);
 }
 
@@ -47,7 +47,7 @@ void SoundSystem::PlaySong() {
 	result = system->playSound(FMOD_CHANNEL_FREE, backgroundMusic, true, 0);
     ERRCHECK(result);
 	
-	result = system->playSound(FMOD_CHANNEL_FREE, flux, false, 0);
+	result = system->playSound(FMOD_CHANNEL_FREE, flux, true, 0); //change to false
     ERRCHECK(result);
 }
 

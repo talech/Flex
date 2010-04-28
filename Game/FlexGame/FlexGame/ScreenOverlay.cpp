@@ -133,6 +133,10 @@ bool ScreenOverlay::Create(Flex* app)
         ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 38, 
         "Let's make this happen!", kColor, 0, 0);
 
+	ms_pkTheScreenOverlay->m_name = NiNew Ni2DString(
+        ms_pkTheScreenOverlay->m_spHUDFont, NiFontString::COLORED, 32, 
+        "Let's make this happen!", kColor, 0, 0);
+
     // Initialize messages
 	int margin = 5;
     int size = 35;
@@ -140,7 +144,7 @@ bool ScreenOverlay::Create(Flex* app)
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
     
-	ms_pkTheScreenOverlay->m_messages.resize(8);
+	ms_pkTheScreenOverlay->m_messages.resize(9);
     ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height, msg);	//Infinite mode - Cont
 	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height, msg);	//3 lives mode - Surviv
@@ -149,6 +153,7 @@ bool ScreenOverlay::Create(Flex* app)
 	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("pausedCont", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[6] = new ScreenMessage("pausedSurviv", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[7] = new ScreenMessage("smash", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[8] = new ScreenMessage("gotHigh", width, height, msg);
 
 	ms_pkTheScreenOverlay->m_lives.resize(3);
 	ms_pkTheScreenOverlay->m_lives[0] = new ScreenMessage("dude", width-(margin*1 + size*1), margin, lives);
@@ -214,7 +219,18 @@ void ScreenOverlay::displayMessages(NiRenderer* pkRenderer, ActiveState state)
 
 void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score, ActiveState state)
 {
-	if(state != aNewGame && state != aGameOver && state != aHighScores){
+	
+	if(state == aGameOver){
+		displayGameOver(pkRenderer,score);		
+	}
+
+	else if(state == aHighScores){
+		displayHighScore(pkRenderer);
+	}
+	else if(state == aGotHigh){
+		displayGotHigh(pkRenderer, score);
+	}
+	else if(state != aNewGame){
 		m_Score->sprintf("Score: %d", score);
 	            
 		float width, height;
@@ -226,45 +242,17 @@ void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score, ActiveState 
 		m_Score->SetPosition(5, 5);
 		m_Score->Draw(pkRenderer);
 	}
-	else if(state == aGameOver){
-		int time = (int)ScoreKeeper::getInstance()->getTime();
-		int final = time*score;
-		m_ScoreMsg->sprintf("Score: %d \nTime: %d secs \nTotal Score: %d", score,time,final);
-	            
-		float width, height;
-		m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
-
-		unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
-		unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
-	               
-		m_ScoreMsg->SetPosition(uiX, uiY);
-		m_ScoreMsg->Draw(pkRenderer);
-	}
-
-	else if(state == aHighScores){
-		displayHighScore(pkRenderer);
-	}
 
 	//smash extra points
 	if(state == aSmash){
-		int smash = ScoreKeeper::getInstance()->getSmashScore();
-		m_ScoreMsg->sprintf("%d points", smash);
-	            
-		float width, height;
-		m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
-
-		unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
-		unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
-	               
-		m_ScoreMsg->SetPosition(uiX, uiY);
-		m_ScoreMsg->Draw(pkRenderer);
+		displaySmash(pkRenderer,score);
 	}
 }
 
 void
 ScreenOverlay::displayHighScore(NiRenderer *pkRenderer){
 	
-	m_ScoreMsg->sprintf("High Scores\n\n Continuous Mode: \n %s %d \n %s %d \n %s %d \n %s %d \n %s %d \n\n Survivor Mode: \n %s %d \n %s %d \n %s %d \n %s %d \n %s %d",
+	m_ScoreMsg->sprintf("High Scores\n\n Continuous Mode: \n %s --> %d \n %s --> %d \n %s --> %d \n %s --> %d \n %s --> %d \n\n Survivor Mode: \n %s --> %d \n %s --> %d \n %s --> %d \n %s --> %d \n %s --> %d",
 		ScoreKeeper::getInstance()->highCont[0].first.c_str(),ScoreKeeper::getInstance()->highCont[0].second,
 		ScoreKeeper::getInstance()->highCont[1].first.c_str(),ScoreKeeper::getInstance()->highCont[1].second,
 		ScoreKeeper::getInstance()->highCont[2].first.c_str(),ScoreKeeper::getInstance()->highCont[2].second,
@@ -287,4 +275,53 @@ ScreenOverlay::displayHighScore(NiRenderer *pkRenderer){
 	m_ScoreMsg->Draw(pkRenderer);
 }
 
+
+void 
+ScreenOverlay::displayGameOver(NiRenderer* pkRenderer, int score){
+	int time = (int)ScoreKeeper::getInstance()->getTime();
+	int final = time*score;
+	if(GameStateManager::getInstance()->mode == Cont)
+		m_ScoreMsg->sprintf("Score: %d \nTime: %d secs \nTotal Score: %d", score,time,final);
+	else
+		m_ScoreMsg->sprintf("Score: %d \n", score);
+	            
+	float width, height;
+	m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
+
+	unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+	unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	              
+	m_ScoreMsg->SetPosition(uiX, uiY);
+	m_ScoreMsg->Draw(pkRenderer);
+}
+
+void 
+ScreenOverlay::displaySmash(NiRenderer* pkRenderer, int score){
+	int smash = ScoreKeeper::getInstance()->getSmashScore();
+	m_ScoreMsg->sprintf("%d points", smash);
+	            
+	float width, height;
+	m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
+
+	unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+	unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	               
+	m_ScoreMsg->SetPosition(uiX, uiY);
+	m_ScoreMsg->Draw(pkRenderer);
+}
+
+void 
+ScreenOverlay::displayGotHigh(NiRenderer* pkRenderer, int score){
+	char* name = (char*)GotHigh::getInstance()->getName();
+	m_name->sprintf("%s \n", name);
+	            
+	float width, height;
+	m_spHUDFont->GetTextExtent(m_name->GetText(), width, height);
+
+	unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+	unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	              
+	m_name->SetPosition(uiX, uiY);
+	m_name->Draw(pkRenderer);
+}
 
