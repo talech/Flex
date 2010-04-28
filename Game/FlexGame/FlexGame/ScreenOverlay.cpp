@@ -313,6 +313,7 @@ ScreenOverlay::displaySmash(NiRenderer* pkRenderer, int score){
 void 
 ScreenOverlay::displayGotHigh(NiRenderer* pkRenderer, int score){
 	char* name = (char*)GotHigh::getInstance()->getName();
+	strcat(name,"\0");
 	m_name->sprintf("%s \n", name);
 	            
 	float width, height;

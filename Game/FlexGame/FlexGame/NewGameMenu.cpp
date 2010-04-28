@@ -17,6 +17,7 @@ void NewGameMenu::enter()
 	GameStateManager::getInstance()->waitingForNewGame = true;
 	GameStateManager::getInstance()->soundSystem->StopSong();
 	GameStateManager::getInstance()->soundSystem->PlayBackground();
+	ScoreKeeper::getInstance()->writeScores();
 }
 
 void NewGameMenu::exit()

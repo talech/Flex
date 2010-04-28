@@ -159,7 +159,7 @@ WallMoving::ScoreWall(){
 
 
 	//increase speed 
-	if(vel < 0.05 && (ScoreKeeper::getInstance()->getWalls()>0) ){
+	if(vel < 4.0  && (ScoreKeeper::getInstance()->getWalls()>0) ){
 		if((ScoreKeeper::getInstance()->getScore()%10) == 0 && !incSpeed){
 			vel += 0.1;	
 			incSpeed = true;

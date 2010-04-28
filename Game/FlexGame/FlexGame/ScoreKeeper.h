@@ -40,6 +40,7 @@ public:
 	bool isHigh();
 
 	void insertName();
+	void writeScores();
 
 	void update( float delTime );
 
@@ -63,7 +64,7 @@ private:
 	static ScoreKeeper mKeeper;
 
 	void readScores();
-	void writeScores();
+	
 
 	ScoreKeeper() {score = 0; lives = 3; walls = 0; smash = 0; time = 0; initTime = 0; readScores();}
 
