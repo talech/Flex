@@ -15,6 +15,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <string.h>
 
 
 #include "Defines.h"
@@ -103,9 +104,9 @@ protected:
     float fLastSimTime;
 
 	//collision block
-	NxActor* redBlock;
 	NxActor* collideCube;
 	void followCube();
+	
 	
     
 };

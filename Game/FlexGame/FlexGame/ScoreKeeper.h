@@ -25,9 +25,14 @@ public:
 	void resetGame();
 	void scoreWall();
 	void loseLife();
+	void scoreFirstHit();
+	void scoreHit();
+	void smashToggle(bool on);
 
+	int getWalls();
 	int getScore();
 	int getLives();
+	int getSmashScore();
 
 	bool isHigh();
 
@@ -42,15 +47,17 @@ public:
 
 private:
 
+	int walls;
 	int score;
 	int lives;
+	int smash;
 
 	static ScoreKeeper mKeeper;
 
 	void readScores();
 	void writeScores();
 
-	ScoreKeeper() {score = 0; lives = 3; readScores();}
+	ScoreKeeper() {score = 0; lives = 3; walls = 0; smash = 0; readScores();}
 
 	
 };

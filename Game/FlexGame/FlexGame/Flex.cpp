@@ -10,6 +10,7 @@
 #include "LoadState.h"
 #include "NewGameMenu.h"
 #include "WallMoving.h"
+#include "ScoreKeeper.h"
 
 
 NiEmbedGamebryoLicenseCode;
@@ -34,6 +35,7 @@ Flex::Flex() : NiApplication("Flex",
 	// Initialize smart pointers to zero. In the case of early termination
     // this avoid errors.
     m_spPhysScene = 0;
+	
 
 	GameStateManager::getInstance()->addApplication(this);
 	GameStateManager::getInstance()->start(RunningState::getInstance());
@@ -298,6 +300,7 @@ Flex::AddPhysicsProps(NiStream &kStream, NiPhysXPropPtr &propPtr){
 bool 
 Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 
+	//Load walls with holes
 	for(int i = 1; i<NUM_WALLS+1; i++){
 	
 		char name[128];
@@ -323,30 +326,31 @@ Flex::InitWalls(NiStream &kStream, NiPhysXPropPtr& propPtr){
 		}
 	}
 
-
-	//init red block = collision block
-	if (!kStream.Load(ConvertMediaFilename("redBlock.nif")))
-	{
-		NIASSERT(0 && "Couldn't load nif file\n");
-		NiMessageBox("Could not load Wall1.nif. Aborting\n",
-			"Missing nif file.");
+	//Load Walls for smashing
+	for(int i = 1; i<NUM_SMASH+1; i++){
 	
-		return false;
-	}
+		char name[128];
+		sprintf(name, "Walls/SMASH%d.nif", i);
 
-	// We know that this NIF file has the wall at location 0. Attach the
-	// wall to the scene graph.
-	NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
-	m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+		if (!kStream.Load(ConvertMediaFilename(name)))
+		{
+			NIASSERT(0 && "Couldn't load nif file\n");
+			NiMessageBox("Could not load Wall1.nif. Aborting\n",
+				"Missing nif file.");
+	 
+			return false;
+		}
 
-	if (!AddPhysicsProps(kStream, propPtr))
-	{
-		NiMessageBox("The NIF file has no physics objects!", "Warning");        
+		// We know that this NIF file has the wall at location 0. Attach the
+		// wall to the scene graph.
+		NIASSERT(NiIsKindOf(NiAVObject, kStream.GetObjectAt(0)));
+		m_spScene->AttachChild((NiAVObject*)kStream.GetObjectAt(0));
+
+		if (!AddPhysicsProps(kStream, propPtr))
+		{
+			NiMessageBox("The NIF file has no physics objects!", "Warning");        
+		}
 	}
-	redBlock = ((NiPhysXRigidBodyDest*)propPtr->GetDestinationAt(0))->GetActor();
-	//no physX for the red cube
-	redBlock->raiseBodyFlag(NX_BF_FROZEN);
-	redBlock->setGlobalPosition( NxVec3(0,-100,0) );
 
 	return true;
 }
@@ -405,7 +409,7 @@ Flex::UpdateFrame(){
 void
 Flex::followCube(){
 	
-	//redBlock->setGlobalPosition(collideCube->getGlobalPosition());
+	
 }
 //---------------------------------------------------------------------------
 void 
@@ -429,10 +433,18 @@ Flex::processContacts(NxContactPair& pair, NxU32 events){
 	if(GameStateManager::getInstance()->collision == false){
 		collideCube = a1;
 		GameStateManager::getInstance()->collision = true;
-		/*NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());
-		NiMaterialProperty* p = (NiMaterialProperty*)cube->GetProperty(NiMaterialProperty::GetType());
-		p->SetDiffuseColor(NiColor(1.0, 0.0, 0.0));
-		cube->UpdateProperties();*/
+		
+		if(GameStateManager::getInstance()->smashing == true){
+			ScoreKeeper::getInstance()->smashToggle(true);
+			if(strcmp(a1->getName(),"smash1") == 0 || strcmp(a2->getName(),"smash2") == 0)
+				ScoreKeeper::getInstance()->scoreFirstHit();
+		}
+	}
+	else{
+		if(GameStateManager::getInstance()->smashing == true){
+			if(strcmp(a1->getName(),"smash1") == 0 || strcmp(a2->getName(),"smash2") == 0)
+				ScoreKeeper::getInstance()->scoreFirstHit();
+		}
 	}
 	
     SetWallPhysicsEnabled(true);
@@ -457,15 +469,8 @@ void
 Flex::ResetWallPhysics(){
 	SetWallPhysicsEnabled(false);
 	m_spPhysScene->RestoreSnapshotState(1);
-	
-	//hide red block
-	/*redBlock->setGlobalPosition( NxVec3(0,-100,0) );
-	NiAVObject* cube = (NiAVObject*)m_spScene->GetObjectByName(collideCube->getName());
-	NiMaterialProperty* p = (NiMaterialProperty*)cube->GetProperty(NiMaterialProperty::GetType());
-    p->SetDiffuseColor(NiColor(0.0, 0.0, 1.0));
-	cube->UpdateProperties();*/
-	
-	
+
+	ScoreKeeper::getInstance()->smashToggle(false);		
 }
 //---------------------------------------------------------------------------
 void 
@@ -489,7 +494,7 @@ Flex::SetWallPhysicsEnabled(bool b, bool force){
 		}
 		//for initialization 
 		else{
-			for(int j = 2; j<NUM_WALLS+2; j++)
+			for(int j = 2; j<(NUM_WALLS+NUM_SMASH)+2; j++)
 			{
 				NiPhysXProp* phys = m_spPhysScene->GetPropAt(j);
 				for (int i = 0; i < phys->GetDestinationsCount(); i++)
@@ -532,7 +537,7 @@ void
 Flex::InitCollisionCallbacks(){
     
 	NiPhysXProp* spPlayerProp = m_spPhysScene->GetPropAt(1);
-	for(int k = 2; k<NUM_WALLS+2; k++)
+	for(int k = 2; k<(NUM_WALLS+NUM_SMASH)+2; k++)
 	{
 		NiPhysXProp* phys = m_spPhysScene->GetPropAt(k);
 		for (int i = 0; i < phys->GetDestinationsCount(); i++)

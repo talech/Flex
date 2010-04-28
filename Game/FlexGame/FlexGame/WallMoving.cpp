@@ -27,6 +27,11 @@ void WallMoving::enter()
 
 	incSpeed = false;
 	oldTime = 0;
+
+	if(GameStateManager::getInstance()->currentWall > NUM_WALLS+1)
+		GameStateManager::getInstance()->smashing = true;
+	else
+		GameStateManager::getInstance()->smashing = false;
 	
 }
 
@@ -82,67 +87,92 @@ void WallMoving::update(float delTime)
 	float dT = delTime - oldTime; 
 	oldTime = delTime;
 
+
 	if(GameStateManager::getInstance()->collision){
 		GameStateManager::getInstance()->changeState(Collided::getInstance());
 	}
 	else{
-		NxActor* wallActor;
-		NxVec3 position;
+		MoveFrontWall(dT);
+	}
+		
+}
 
-		for(int i = 0; i < spWallProp->GetDestinationsCount(); i++)
-		{
-			wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
-			position = wallActor->getGlobalPosition();
-			float z = position[2];
-			position[2] = position[2] + (dT*vel);
-			wallActor->setGlobalPosition(position);
-			
-			NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
-            z, position[2], dT);
-			
+void
+WallMoving::MoveFrontWall(float dT){
+	NxActor* wallActor;
+	NxVec3 position;
 
+	for(int i = 0; i < spWallProp->GetDestinationsCount(); i++)
+	{
+		wallActor = ((NiPhysXRigidBodyDest*)spWallProp->GetDestinationAt(i))->GetActor();
+		position = wallActor->getGlobalPosition();
+		float z = position[2];
+		position[2] = position[2] + (dT*vel);
+		wallActor->setGlobalPosition(position);
+		
+		/*NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
+          z, position[2], dT);*/
+	}
+	if(position[2]>(0)){
+		MoveBackWall(dT);
+	}
+	if(position[2]>(20)){
+		ScoreWall();
+	}
+
+
+}
+
+void
+WallMoving::MoveBackWall(float dT){
+	NxActor* wallActor_2;
+	NxVec3 position_2;
+	for(int i = 0; i < spWallProp_2->GetDestinationsCount(); i++)
+	{
+		wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
+		position_2 = wallActor_2->getGlobalPosition();
+		float z = position_2[2];
+		position_2[2] = position_2[2] + (dT*vel);
+		wallActor_2->setGlobalPosition(position_2);
+
+		/*NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
+		z, position_2[2], dT);*/
+	}
+}
+
+void
+WallMoving::ScoreWall(){
+	
+	ScoreKeeper::getInstance()->scoreWall();
+	GameStateManager::getInstance()->toggleEnableWall(false);
+	GameStateManager::getInstance()->currentWall = currentWall_2;
+	ResetWall();
+	GameStateManager::getInstance()->toggleEnableWall(true);
+
+	do{ currentWall_2 = randNum(); }
+	while(currentWall_2 == GameStateManager::getInstance()->currentWall);
+
+	spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
+	spWallProp_2 = GameStateManager::getInstance()->physScene->GetPropAt(currentWall_2);
+
+
+	//increase speed 
+	if(vel < 0.05 && (ScoreKeeper::getInstance()->getWalls()>0) ){
+		if((ScoreKeeper::getInstance()->getScore()%10) == 0 && !incSpeed){
+			vel += 0.1;	
+			incSpeed = true;
 		}
-		if(position[2]>(0)){
-			NxActor* wallActor_2;
-			NxVec3 position_2;
-			for(int i = 0; i < spWallProp_2->GetDestinationsCount(); i++)
-			{
-				wallActor_2 = ((NiPhysXRigidBodyDest*)spWallProp_2->GetDestinationAt(i))->GetActor();
-				position_2 = wallActor_2->getGlobalPosition();
-				float z = position_2[2];
-				position_2[2] = position_2[2] + (dT*vel);
-				wallActor_2->setGlobalPosition(position_2);
-
-				NILOG(NIMESSAGE_GENERAL_0, "WALL: z-old: %f z-new: %f delTime: %f ", 
-				z, position_2[2], dT);
-			}
-		}
-		if(position[2]>(20)){
-			ScoreKeeper::getInstance()->scoreWall();
-			GameStateManager::getInstance()->toggleEnableWall(false);
-			GameStateManager::getInstance()->currentWall = currentWall_2;
-			ResetWall();
-			GameStateManager::getInstance()->toggleEnableWall(true);
-
-			do{ currentWall_2 = randNum(); }
-			while(currentWall_2 == GameStateManager::getInstance()->currentWall);
-
-			spWallProp = GameStateManager::getInstance()->physScene->GetPropAt(GameStateManager::getInstance()->currentWall);
-			spWallProp_2 = GameStateManager::getInstance()->physScene->GetPropAt(currentWall_2);
-
-			if(vel < 0.05 && (ScoreKeeper::getInstance()->getScore()>0) ){
-				if((ScoreKeeper::getInstance()->getScore()%10) == 0 && !incSpeed){
-					vel += 0.1;	
-					incSpeed = true;
-				}
-				else if((ScoreKeeper::getInstance()->getScore()%10) != 0){	
-					incSpeed = false;
-				}
-			}
+		else if((ScoreKeeper::getInstance()->getWalls()%10) != 0){	
+			incSpeed = false;
 		}
 	}
 
-		
+	//is it a smashing wall?
+	if(GameStateManager::getInstance()->currentWall > NUM_WALLS+1)
+		GameStateManager::getInstance()->smashing = true;
+	else
+		GameStateManager::getInstance()->smashing = false;
+	
 }
 
 void 

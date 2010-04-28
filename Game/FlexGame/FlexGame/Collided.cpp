@@ -13,10 +13,10 @@ Collided::~Collided()
 void Collided::enter()
 {
 	waitTime = 0;
-	if(GameStateManager::getInstance()->mode == Surviv){
-		ScoreKeeper::getInstance()->loseLife();
-		
+	if(GameStateManager::getInstance()->mode == Surviv && !GameStateManager::getInstance()->smashing){
+		ScoreKeeper::getInstance()->loseLife();	
 	}
+
 	
 	
 	
@@ -55,7 +55,9 @@ void Collided::update(float delTime)
 {
 	waitTime++;
 	if(waitTime == 20) {
-		if(GameStateManager::getInstance()->mode == Surviv)
+		if(GameStateManager::getInstance()->smashing)
+			GameStateManager::getInstance()->state = aSmash;
+		else if(GameStateManager::getInstance()->mode == Surviv)
 			GameStateManager::getInstance()->state = aCollidedSurviv;
 		else
 			GameStateManager::getInstance()->state = aCollidedCont;

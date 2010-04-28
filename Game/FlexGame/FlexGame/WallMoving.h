@@ -41,6 +41,9 @@ protected:
 	float oldTime;
 	bool incSpeed;
 
+	void MoveFrontWall(float dT);
+	void MoveBackWall(float dT);
+	void ScoreWall();
 	void ResetWall();
 };
 #endif

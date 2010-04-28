@@ -12,10 +12,11 @@
 static ViconDataClient client("158.130.2.253", false, true, true, false, false, ViconDataStreamSDK::CPP::StreamMode::ServerPush);
 
 static int NUM_WALLS = 10;
-static int randNum(){ return (rand() % NUM_WALLS + 2); }
+static int NUM_SMASH = 5;
+static int randNum(){ return (rand() % (NUM_WALLS+NUM_SMASH) + 2); }
 
 
-enum ActiveState{aNewGame,aCollidedCont,aCollidedSurviv,aGameOver,aHighScores,aPausedCont,aPausedSurviv,aWallMoving};
+enum ActiveState{aNewGame,aCollidedCont,aCollidedSurviv,aGameOver,aHighScores,aPausedCont,aPausedSurviv,aSmash,aWallMoving};
 enum GameMode{Cont,Surviv};
 
 

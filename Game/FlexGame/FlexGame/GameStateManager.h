@@ -56,6 +56,9 @@ public:
 
 	bool waitingForNewGame;
 	bool collision;
+	
+	bool smashing;
+
 	int currentWall;
 	NiPhysXPropDesc* pkSnapshot;
 

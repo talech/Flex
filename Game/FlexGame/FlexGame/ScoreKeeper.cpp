@@ -3,19 +3,41 @@
 ScoreKeeper ScoreKeeper::mKeeper;
 
 ScoreKeeper::~ScoreKeeper(){
+	walls = 0;
 	score = 0;
 	lives = 0;
+	smash = 0;
 }
 
 void 
 ScoreKeeper::resetGame(){
+	walls = 0;
 	score = 0;
 	lives = 3;
+	smash = 0;
+}
+
+void
+ScoreKeeper::smashToggle(bool on){
+	if(!on)
+		smash = 0;
+}
+
+void
+ScoreKeeper::scoreFirstHit(){
+	score += 10;
+	smash += 10;
+}
+
+void
+ScoreKeeper::scoreHit(){
+	score += 1;
+	smash += 1;
 }
 
 void
 ScoreKeeper::scoreWall(){
-	score += 1;
+	walls += 1;
 }
 
 void
@@ -24,13 +46,23 @@ ScoreKeeper::loseLife(){
 }
 
 int
+ScoreKeeper::getWalls(){
+	return walls;
+}
+
+int
 ScoreKeeper::getScore(){
-	return score;
+	return score+walls;
 }
 
 int 
 ScoreKeeper::getLives(){
 	return lives;
+}
+
+int
+ScoreKeeper::getSmashScore(){
+	return smash;
 }
 
 void 

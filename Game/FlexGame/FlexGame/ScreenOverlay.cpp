@@ -140,7 +140,7 @@ bool ScreenOverlay::Create(Flex* app)
 	int width = app->DEFAULT_WIDTH;
 	int height = app->DEFAULT_HEIGHT;
     
-	ms_pkTheScreenOverlay->m_messages.resize(7);
+	ms_pkTheScreenOverlay->m_messages.resize(8);
     ms_pkTheScreenOverlay->m_messages[0] = new ScreenMessage("newgame", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[1] = new ScreenMessage("collided2", width, height, msg);	//Infinite mode - Cont
 	ms_pkTheScreenOverlay->m_messages[2] = new ScreenMessage("collided", width, height, msg);	//3 lives mode - Surviv
@@ -148,6 +148,7 @@ bool ScreenOverlay::Create(Flex* app)
 	ms_pkTheScreenOverlay->m_messages[4] = new ScreenMessage("highScores", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[5] = new ScreenMessage("pausedCont", width, height, msg);
 	ms_pkTheScreenOverlay->m_messages[6] = new ScreenMessage("pausedSurviv", width, height, msg);
+	ms_pkTheScreenOverlay->m_messages[7] = new ScreenMessage("smash", width, height, msg);
 
 	ms_pkTheScreenOverlay->m_lives.resize(3);
 	ms_pkTheScreenOverlay->m_lives[0] = new ScreenMessage("dude", width-(margin*1 + size*1), margin, lives);
@@ -241,6 +242,21 @@ void ScreenOverlay::displayScore(NiRenderer* pkRenderer, int score, ActiveState 
 
 	else if(state == aHighScores){
 		displayHighScore(pkRenderer);
+	}
+
+	//smash extra points
+	if(state == aSmash){
+		int smash = ScoreKeeper::getInstance()->getSmashScore();
+		m_ScoreMsg->sprintf("%d points", smash);
+	            
+		float width, height;
+		m_spHUDFont->GetTextExtent(m_ScoreMsg->GetText(), width, height);
+
+		unsigned int uiX = (m_app->DEFAULT_WIDTH/2)-(int)(width/2);
+		unsigned int uiY =(m_app->DEFAULT_HEIGHT/2)-(int)(height/2);
+	               
+		m_ScoreMsg->SetPosition(uiX, uiY);
+		m_ScoreMsg->Draw(pkRenderer);
 	}
 }
 
